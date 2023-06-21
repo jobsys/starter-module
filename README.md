@@ -4,15 +4,18 @@
 
 ## 模块安装
 
+### 安装依赖
+
 ```bash
 composer require jobsys/starter-module
 ```
 
-### 依赖
+### 安装内容
 
-+ PHP 依赖 (所有)
+```bash
+php artisan starter:install
+```
 
-+ JS 依赖 (所有)
 
 ### 配置
 
@@ -91,7 +94,6 @@ composer require jobsys/starter-module
 
 ## 模块代码
 
-
 ### 数据表
 
 ```bash
@@ -136,7 +138,6 @@ enum State: string
 ```
 
 ### 辅助函数
-
 
 #### 基础
 
