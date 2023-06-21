@@ -74,6 +74,11 @@ class InstallCommand extends Command
 
         // add \App\Http\Middleware\HandleInertiaRequests::class, to $middlewareGroups['web'] in app/Http/Kernel.php
         $file_content = file_get_contents(app_path('Http/Kernel.php'));
+
+        if (str_contains($file_content, 'HandleInertiaRequests::class')) {
+            return;
+        }
+
         $file_content = str_replace(
             "'web' => [",
             "'web' => [
@@ -89,6 +94,13 @@ class InstallCommand extends Command
         $this->callSilent('telescope:install');
 
         $file_content = file_get_contents(app_path('Providers/TelescopeServiceProvider.php'));
+
+        if (str_contains($file_content, 'installeddddddd')) {
+            return;
+        }
+
+        $file_content = str_replace('<?php', "<?php //installeddddddd", $file_content);
+
         $file_content = str_replace('return in_array($user->email, [', 'return in_array($user->id, [ 1 ', $file_content);
         file_put_contents(app_path('Providers/TelescopeServiceProvider.php'), $file_content);
 
