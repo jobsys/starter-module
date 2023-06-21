@@ -1,6 +1,7 @@
 {
     "name": "jobsys/starter-module",
     "description": "",
+    "license": "MIT",
     "type": "laravel-module",
     "authors": [
         {

@@ -157,6 +157,7 @@ class StarterServiceProvider extends ServiceProvider
 
                 module_path($this->moduleName, 'stubs/Models/Department.stub') => app_path('Models/Department.php'),
                 module_path($this->moduleName, 'stubs/Models/User.stub') => app_path('Models/User.php'),
+                module_path($this->moduleName, 'stubs/Models/SnsUser.stub') => app_path('Models/SnsUser.php'),
 
                 module_path($this->moduleName, 'stubs/Provider/AppServiceProvider.stub') => app_path('Providers/AppServiceProvider.php'),
                 module_path($this->moduleName, 'stubs/Provider/AuthServiceProvider.stub') => app_path('Providers/AuthServiceProvider.php'),
@@ -181,6 +182,7 @@ class StarterServiceProvider extends ServiceProvider
                 module_path($this->moduleName, 'stubs/.jsconfig.json.stub') => base_path('jsconfig.json'),
                 module_path($this->moduleName, 'stubs/package.json.stub') => base_path('package.json'),
                 module_path($this->moduleName, 'stubs/tailwind.config.js.stub') => base_path('tailwind.config.js'),
+                module_path($this->moduleName, 'stubs/postcss.config.js.stub') => base_path('postcss.config.js'),
                 module_path($this->moduleName, 'stubs/vite.config.js.stub') => base_path('vite.config.js'),
 
                 module_path($this->moduleName, 'stubs/assets/js') => resource_path('js'),
