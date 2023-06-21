@@ -44,7 +44,7 @@ class InstallCommand extends Command
         $this->installTelescope();
 
         $this->info('Publishing Assets...');
-        $this->callSilent('vendor:publish', ['--tag' => 'starter-assets', '--force']);
+        $this->callSilent('vendor:publish', ['--tag' => 'starter-assets', '--force' => true]);
     }
 
 
