@@ -9,7 +9,7 @@ return [
     'super_admin_name' => 'root',
     'super_admin_id' => 1,
     //超级管理员密码
-    'super_password' => env('SUPER_PWD', 'SuperPwd@zh1xun'),
+    'super_password' => env('SUPER_PWD', ''),
     //登录字段
     'login_field' => ['name'],
 
