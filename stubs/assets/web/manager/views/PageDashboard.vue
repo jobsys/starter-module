@@ -21,52 +21,58 @@
                     </div>
                 </div>
 
-                <div class="flex stat-items justify-end">
-                    <div
-                        class="stat-item flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-all"
-                        @click="() => router.visit(route('page.manager.project'))"
-                    >
-                        <div class="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mr-4">
-                            <NewbieIcon icon="iconfont-projector-line" class="text-blue-300 text-3xl mt-2"></NewbieIcon>
-                        </div>
-                        <a-statistic
-                            title="项目总数"
-                            :value="brief.projects_count || 0"
-                            :value-style="{ textAlign: 'center' }"
-                            suffix="个"
-                        ></a-statistic>
-                    </div>
-                    <div
-                        class="stat-item flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-all"
-                        @click="() => router.visit(route('page.manager.course'))"
-                    >
-                        <div class="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mr-4">
-                            <NewbieIcon icon="iconfont-folder-user-line" class="text-green-300 text-3xl mt-2"></NewbieIcon>
-                        </div>
-                        <a-statistic
-                            title="开班总数"
-                            :value="brief.courses_count || 0"
-                            :value-style="{ textAlign: 'center' }"
-                            suffix="个"
-                        ></a-statistic>
-                    </div>
-                    <div class="stat-item flex items-center justify-between">
-                        <div class="bg-gray-50 rounded-full w-16 h-16 flex items-center justify-center mr-4">
-                            <NewbieIcon icon="iconfont-team-line" class="text-red-300 text-3xl mt-2"></NewbieIcon>
-                        </div>
-                        <a-statistic
-                            title="学员总数"
-                            :value="brief.students_count || 0"
-                            :value-style="{ textAlign: 'center' }"
-                            suffix="人"
-                        ></a-statistic>
-                    </div>
-                </div>
+                <div class="flex stat-items justify-end">Statistics here!</div>
             </div>
         </a-page-header>
 
         <a-row :gutter="16">
-            <a-col :sm="24" :md="24" :lg="14">Hello World !</a-col>
+            <a-col :sm="24" :md="24" :lg="14">
+                <a-card title="进行中的项目">
+                    <template #extra>
+                        <Link>全部项目</Link>
+                    </template>
+                    <a-empty v-if="!projects.length" description="暂无进行中的项目"></a-empty>
+                    <a-card-grid v-else v-for="project in projects" :key="project.id" style="width: 33.33%">
+                        <Link> </Link>
+                    </a-card-grid>
+                </a-card>
+
+                <a-row :gutter="16" class="my-4">
+                    <a-col :span="12">
+                        <a-card title="新闻公告">
+                            <template #extra>
+                                <Link>查看更多</Link>
+                            </template>
+
+                            <a-list :data-source="posts">
+                                <template #renderItem="{ item }">
+                                    <a-list-item class="cursor-pointer">
+                                        <a-tag color="green">{{ item.group.display_name }}</a-tag>
+                                        <div class="text-ellipsis overflow-hidden truncate">{{ item.title }}</div>
+                                    </a-list-item>
+                                </template>
+                            </a-list>
+                        </a-card>
+                    </a-col>
+                    <a-col :span="12">
+                        <a-card title="常用功能">
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作一</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作二</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作三</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作四</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作五</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作六</a-button>
+                            <a-button type="text" style="width: 25%; margin-bottom: 10px">操作七</a-button>
+                            <a-button type="primary" style="width: 25%; margin-bottom: 10px">
+                                <template #icon>
+                                    <NewbieIcon icon="PlusOutlined"></NewbieIcon>
+                                </template>
+                                添加
+                            </a-button>
+                        </a-card>
+                    </a-col>
+                </a-row>
+            </a-col>
             <a-col :sm="24" :md="24" :lg="10">
                 <NotificationBox :use-store="notificationStore"></NotificationBox>
             </a-col>
@@ -76,20 +82,22 @@
 
 <script setup>
 import { useNotificationStore, useUserStore } from "@manager/stores"
-import { computed, inject } from "vue"
+import { computed } from "vue"
 import DefaultAvatar from "@public/images/default-avatar.png"
-import { router } from "@inertiajs/vue3"
+import { Link } from "@inertiajs/vue3"
 import NewbieIcon from "@web/components/NewbieIcon.vue"
 
 import NotificationBox from "@modules/Starter/Resources/views/web/components/NotificationBox.vue"
 
 const userStore = useUserStore()
 const notificationStore = useNotificationStore()
-const route = inject("route")
 
 defineProps({
     roles: { type: Array, default: () => [] },
     departments: { type: Array, default: () => [] },
+    projects: { type: Array, default: () => [] },
+    posts: { type: Array, default: () => [] },
+    brief: { type: Object, default: () => ({}) },
 })
 
 const profile = computed(() => userStore.profile)
@@ -111,6 +119,31 @@ const profile = computed(() => userStore.profile)
             .ant-statistic-content {
                 text-align: center;
             }
+        }
+    }
+}
+
+.project-stat {
+    .project-name {
+        line-height: 20px;
+        height: 40px;
+    @apply text-ellipsis overflow-hidden;
+    }
+
+    .project-meta {
+        position: relative;
+        display: flex;
+        border-right: 1px solid #f0f0f0;
+        padding-right: 10px;
+        box-sizing: border-box;
+
+        &:last-child {
+            padding-right: 0;
+            border-right: none;
+        }
+
+        .value {
+            font-weight: bold;
         }
     }
 }
