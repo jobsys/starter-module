@@ -11,7 +11,7 @@ module.exports = {
 		"airbnb-base",
 		"plugin:prettier/recommended",
 	],
-	ignorePatterns: ["public/*", "node_modules/*", "!.prettierrc.js", "vendor/*", "vite.config.js"],
+	ignorePatterns: ["public/*", "node_modules/*", "!.prettierrc.js", "vendor/*", "vite.config.js",  "**/stubs/*"],
 	overrides: [],
 	parserOptions: {
 		ecmaVersion: "latest",
