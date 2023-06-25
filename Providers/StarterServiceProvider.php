@@ -149,11 +149,12 @@ class StarterServiceProvider extends ServiceProvider
             $this->publishes([
                 module_path($this->moduleName, 'stubs/Console/Kernel.stub') => app_path('Console/Kernel.php'),
 
-                module_path($this->moduleName, 'stubs/assets/BaseManagerController.stub') => app_path('Http/Controllers/BaseManagerController.php'),
-                module_path($this->moduleName, 'stubs/Manager/DepartmentController.stub') => app_path('Http/Controllers/Manager/DepartmentController.php'),
-                module_path($this->moduleName, 'stubs/Manager/UserController.stub') => app_path('Http/Controllers/Manager/UserController.php'),
-                module_path($this->moduleName, 'stubs/Manager/IndexController.stub') => app_path('Http/Controllers/Manager/IndexController.php'),
-                module_path($this->moduleName, 'stubs/Manager/ToolController.stub') => app_path('Http/Controllers/Manager/ToolController.php'),
+                module_path($this->moduleName, 'stubs/Http/Controllers/BaseManagerController.stub') => app_path('Http/Controllers/BaseManagerController.php'),
+                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/DepartmentController.stub') => app_path('Http/Controllers/Manager/DepartmentController.php'),
+                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/UserController.stub') => app_path('Http/Controllers/Manager/UserController.php'),
+                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/IndexController.stub') => app_path('Http/Controllers/Manager/IndexController.php'),
+                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/ToolController.stub') => app_path('Http/Controllers/Manager/ToolController.php'),
+                module_path($this->moduleName, 'stubs/Http/Kernel.stub') => app_path('Http/Kernel.php'),
 
                 module_path($this->moduleName, 'stubs/Models/Department.stub') => app_path('Models/Department.php'),
                 module_path($this->moduleName, 'stubs/Models/User.stub') => app_path('Models/User.php'),
@@ -172,11 +173,12 @@ class StarterServiceProvider extends ServiceProvider
 
                 module_path($this->moduleName, 'stubs/config/conf.stub') => config_path('conf.php'),
                 module_path($this->moduleName, 'stubs/config/module.stub') => config_path('module.php'),
-                module_path($this->moduleName, 'stubs/config/menus.stub') => config_path('default/module.php'),
+                module_path($this->moduleName, 'stubs/config/menus.stub') => config_path('default/menus.php'),
 
                 module_path($this->moduleName, 'stubs/assets/images') => public_path('images'),
                 module_path($this->moduleName, 'stubs/.htaccess.stub') => public_path('.htaccess'),
 
+                module_path($this->moduleName, 'stubs/.editorconfig.stub') => base_path('.editorconfig'),
                 module_path($this->moduleName, 'stubs/.prettierrc.js.stub') => base_path('.prettierrc.js'),
                 module_path($this->moduleName, 'stubs/.eslintrc.js.stub') => base_path('.eslintrc.js'),
                 module_path($this->moduleName, 'stubs/.jsconfig.json.stub') => base_path('jsconfig.json'),

@@ -45,9 +45,7 @@ module.exports = {
 					["@modules", "./Modules"],
 					["@public", "./public"],
 					["@web", "./resources/views/web"],
-					["@manager", "./resources/views/web/manager"],
-					["@mobile", "./resources/views/mobile"],
-					["@unit", "./resources/views/mobile/unit"],
+					["@manager", "./resources/views/web/manager"]
 				],
 			},
 		},
