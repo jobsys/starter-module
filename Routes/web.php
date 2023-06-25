@@ -11,6 +11,7 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
 use Modules\Starter\Http\Controllers\UserCgiController;
 
 $route_prefix = config('module.Starter.route_prefix', 'manager');
