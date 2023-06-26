@@ -181,7 +181,7 @@ class StarterServiceProvider extends ServiceProvider
                 module_path($this->moduleName, 'stubs/.editorconfig.stub') => base_path('.editorconfig'),
                 module_path($this->moduleName, 'stubs/.prettierrc.js.stub') => base_path('.prettierrc.js'),
                 module_path($this->moduleName, 'stubs/.eslintrc.js.stub') => base_path('.eslintrc.js'),
-                module_path($this->moduleName, 'stubs/.jsconfig.json.stub') => base_path('jsconfig.json'),
+                module_path($this->moduleName, 'stubs/jsconfig.json.stub') => base_path('jsconfig.json'),
                 module_path($this->moduleName, 'stubs/package.json.stub') => base_path('package.json'),
                 module_path($this->moduleName, 'stubs/tailwind.config.js.stub') => base_path('tailwind.config.js'),
                 module_path($this->moduleName, 'stubs/postcss.config.js.stub') => base_path('postcss.config.js'),
