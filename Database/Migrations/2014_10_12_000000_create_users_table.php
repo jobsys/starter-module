@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->dateTime('email_verified_at')->nullable()->comment('邮件验证发出时间');
             $table->string('email_verified_token')->index()->nullable()->comment('邮箱验证TOKEN');
             $table->dateTime('sms_verified_at')->nullable()->comment('短信验证发出时间');
-            $table->dateTime('sms_verified_token')->index()->nullable()->comment('短信验证码');
+            $table->string('sms_verified_token')->index()->nullable()->comment('短信验证码');
             $table->integer('login_error_count')->default(0)->comment('连续登录错误次数');
             $table->dateTime('last_login_error_at')->nullable()->comment('上次错误登录时间');
             $table->dateTime('last_login_at')->nullable()->comment('上次登录时间');
