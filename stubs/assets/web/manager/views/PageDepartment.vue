@@ -9,7 +9,7 @@
 	>
 		<template #functional>
 			<NewbieButton v-if="$auth('api.manager.department.edit')" type="primary" icon="PlusOutlined" @click="onEdit(false)"
-				>新增部门
+			>新增部门
 			</NewbieButton>
 		</template>
 	</NewbieTable>
@@ -55,9 +55,9 @@ const myFetched = (res) => {
 			item.key = item.id
 			item.children = item.children
 				? item.children.map((child) => {
-						child.key = child.id
-						return child
-				  })
+					child.key = child.id
+					return child
+				})
 				: null
 
 			return item
