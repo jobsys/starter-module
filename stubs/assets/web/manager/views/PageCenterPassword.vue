@@ -31,7 +31,7 @@
 import { inject, reactive, ref } from "vue"
 import { encryptBySM3 } from "@/js/utils/cipher"
 import { useFetch } from "@/js/hooks/web/network"
-import { NewbiePassword, NewbieButton } from "@web/components"
+import { NewbieButton, NewbiePassword } from "@web/components"
 import { message } from "ant-design-vue"
 import { cloneDeep } from "lodash-es"
 import { useProcessStatusSuccess } from "@/js/hooks/web/form"

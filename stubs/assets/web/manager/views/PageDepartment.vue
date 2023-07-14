@@ -9,7 +9,7 @@
 	>
 		<template #functional>
 			<NewbieButton v-if="$auth('api.manager.department.edit')" type="primary" icon="PlusOutlined" @click="onEdit(false)"
-				>新增部门
+			>新增部门
 			</NewbieButton>
 		</template>
 	</NewbieTable>
@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { NewbieTable, NewbieButton, NewbieEdit, NewbieModal, useTableActions } from "@web/components"
+import { NewbieButton, NewbieEdit, NewbieModal, NewbieTable, useTableActions } from "@web/components"
 import { useFetch } from "@/js/hooks/web/network"
 import { useModalConfirm } from "@/js/hooks/web/interact"
 import { useProcessStatusSuccess } from "@/js/hooks/web/form"
@@ -55,9 +55,9 @@ const myFetched = (res) => {
 			item.key = item.id
 			item.children = item.children
 				? item.children.map((child) => {
-						child.key = child.id
-						return child
-				  })
+					child.key = child.id
+					return child
+				})
 				: null
 
 			return item
