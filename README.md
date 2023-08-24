@@ -7,13 +7,7 @@
 ### 安装依赖
 
 ```bash
-composer require jobsys/starter-module
-```
-
-### 安装内容
-
-```bash
-php artisan starter:install
+composer require jobsys/starter-module  --dev
 ```
 
 
