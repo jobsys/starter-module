@@ -12,7 +12,6 @@
     "require": {
         "inertiajs/inertia-laravel": "^0.6.9",
         "laravel/framework": "^10.0",
-        "laravel/telescope": "^4.14",
         "lizhichao/one-sm": "^1.10",
         "mews/captcha": "^3.3",
         "overtrue/laravel-pinyin": "^5.0",
