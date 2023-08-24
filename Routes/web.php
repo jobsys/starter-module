@@ -23,7 +23,7 @@ Route::prefix("{$route_url_prefix}starter")->name("page.{$route_name_prefix}star
 });
 
 
-Route::prefix("{$route_url_prefix}export")->name("export.{$route_name_prefix}starter")->group(function () {
+Route::prefix("{$route_url_prefix}export")->name("export.{$route_name_prefix}starter.")->group(function () {
     Route::get('/dict', 'DictController@export')->name('dict');
 });
 
