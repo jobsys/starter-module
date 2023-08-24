@@ -62,11 +62,11 @@
 	</div>
 </template>
 <script setup>
-import {computed, inject, ref} from "vue"
-import {EnterOutlined} from "@ant-design/icons-vue"
-import {router} from "@inertiajs/vue3"
-import {useFetch, useProcessStatusSuccess} from "jobsys-newbie/hooks"
-import {message} from "ant-design-vue"
+import { computed, inject, ref } from "vue"
+import { EnterOutlined } from "@ant-design/icons-vue"
+import { router } from "@inertiajs/vue3"
+import { useFetch, useProcessStatusSuccess } from "jobsys-newbie/hooks"
+import { message } from "ant-design-vue"
 
 const props = defineProps({
 	height: {

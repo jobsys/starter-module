@@ -87,13 +87,13 @@
 </template>
 
 <script setup>
-import {inject, onMounted, reactive, ref} from "vue"
-import {message} from "ant-design-vue"
-import {LockOutlined, UserOutlined, CalculatorOutlined} from "@ant-design/icons-vue"
-import {useSm3} from "jobsys-newbie/hooks"
+import { inject, onMounted, reactive, ref } from "vue"
+import { message } from "ant-design-vue"
+import { LockOutlined, UserOutlined, CalculatorOutlined } from "@ant-design/icons-vue"
+import { useSm3 } from "jobsys-newbie/hooks"
 import Logo from "@public/images/logo.png"
-import {useFetch, useProcessStatus} from "jobsys-newbie/hooks"
-import {cloneDeep} from "lodash-es"
+import { useFetch, useProcessStatus } from "jobsys-newbie/hooks"
+import { cloneDeep } from "lodash-es"
 import Background from "@public/images/backgrounds/sun-tornado-dark-blue.svg"
 
 const route = inject("route")

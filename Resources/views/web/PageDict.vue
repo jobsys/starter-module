@@ -49,11 +49,11 @@
 </template>
 
 <script setup>
-import {useTableActions} from "jobsys-newbie"
-import {useFetch, useModalConfirm, useProcessStatusSuccess} from "jobsys-newbie/hooks"
-import {message} from "ant-design-vue"
-import {h, inject, reactive, ref} from "vue"
-import {DeleteOutlined, EditOutlined, ExportOutlined, OrderedListOutlined, PlusOutlined} from "@ant-design/icons-vue"
+import { useTableActions } from "jobsys-newbie"
+import { useFetch, useModalConfirm, useProcessStatusSuccess } from "jobsys-newbie/hooks"
+import { message } from "ant-design-vue"
+import { h, inject, reactive, ref } from "vue"
+import { DeleteOutlined, EditOutlined, ExportOutlined, OrderedListOutlined, PlusOutlined } from "@ant-design/icons-vue"
 
 const list = ref(null)
 const edit = ref(null)
