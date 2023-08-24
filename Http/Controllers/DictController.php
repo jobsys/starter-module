@@ -4,6 +4,7 @@ namespace Modules\Starter\Http\Controllers;
 
 use App\Exporters\DictExporter;
 use App\Http\Controllers\BaseManagerController;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Modules\Starter\Entities\Dictionary;
@@ -43,14 +44,11 @@ class DictController extends BaseManagerController
 
     public function items(Request $request)
     {
-        $name = $request->input('name', false);
-        $display_name = $request->input('display_name', false);
-
-        $pagination = Dictionary::when($name, function ($query) use ($name) {
-            return $query->where('name', 'like', "%{$name}%");
-        })->when($display_name, function ($query) use ($display_name) {
-            return $query->where('display_name', 'like', "%{$display_name}%");
-        })->orderBy('id', 'desc')->paginate();
+        $pagination = Dictionary::filterable([
+            'name' => function(Builder $builder, $query){
+                return $builder->where('name', $query['value']);
+            }
+        ])->orderBy('id', 'desc')->paginate();
 
         log_access('查询字典列表');
 

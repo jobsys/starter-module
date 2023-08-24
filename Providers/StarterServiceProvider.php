@@ -30,11 +30,6 @@ class StarterServiceProvider extends ServiceProvider
         $this->registerViews();
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
         $this->loadAllHelpers();
-        $this->registerAdminAssetPublishing();
-
-        $this->commands([
-            InstallCommand::class
-        ]);
     }
 
     /**
@@ -139,58 +134,6 @@ class StarterServiceProvider extends ServiceProvider
             foreach (glob($helper_path . '/*.php') as $filename) {
                 require_once $filename;
             }
-        }
-    }
-
-    private function registerAdminAssetPublishing()
-    {
-
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                module_path($this->moduleName, 'stubs/Console/Kernel.stub') => app_path('Console/Kernel.php'),
-
-                module_path($this->moduleName, 'stubs/Http/Controllers/BaseManagerController.stub') => app_path('Http/Controllers/BaseManagerController.php'),
-                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/DepartmentController.stub') => app_path('Http/Controllers/Manager/DepartmentController.php'),
-                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/UserController.stub') => app_path('Http/Controllers/Manager/UserController.php'),
-                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/IndexController.stub') => app_path('Http/Controllers/Manager/IndexController.php'),
-                module_path($this->moduleName, 'stubs/Http/Controllers/Manager/ToolController.stub') => app_path('Http/Controllers/Manager/ToolController.php'),
-                module_path($this->moduleName, 'stubs/Http/Kernel.stub') => app_path('Http/Kernel.php'),
-
-                module_path($this->moduleName, 'stubs/Models/Department.stub') => app_path('Models/Department.php'),
-                module_path($this->moduleName, 'stubs/Models/User.stub') => app_path('Models/User.php'),
-                module_path($this->moduleName, 'stubs/Models/SnsUser.stub') => app_path('Models/SnsUser.php'),
-
-                module_path($this->moduleName, 'stubs/Provider/AppServiceProvider.stub') => app_path('Providers/AppServiceProvider.php'),
-                module_path($this->moduleName, 'stubs/Provider/AuthServiceProvider.stub') => app_path('Providers/AuthServiceProvider.php'),
-
-                module_path($this->moduleName, 'stubs/Services/UserService.stub') => app_path('Services/UserService.php'),
-
-                module_path($this->moduleName, 'stubs/routes/api.stub') => base_path('routes/api.php'),
-                module_path($this->moduleName, 'stubs/routes/web.stub') => base_path('routes/web.php'),
-
-                module_path($this->moduleName, 'stubs/seeders/SetupSeeder.stub') => database_path('seeders/SetupSeeder.php'),
-                module_path($this->moduleName, 'stubs/seeders/DatabaseSeeder.stub') => database_path('seeders/DatabaseSeeder.php'),
-
-                module_path($this->moduleName, 'stubs/config/conf.stub') => config_path('conf.php'),
-                module_path($this->moduleName, 'stubs/config/module.stub') => config_path('module.php'),
-                module_path($this->moduleName, 'stubs/config/menus.stub') => config_path('default/menus.php'),
-
-                module_path($this->moduleName, 'stubs/assets/images') => public_path('images'),
-                module_path($this->moduleName, 'stubs/.htaccess.stub') => public_path('.htaccess'),
-
-                module_path($this->moduleName, 'stubs/.editorconfig.stub') => base_path('.editorconfig'),
-                module_path($this->moduleName, 'stubs/.prettierrc.js.stub') => base_path('.prettierrc.js'),
-                module_path($this->moduleName, 'stubs/.eslintrc.js.stub') => base_path('.eslintrc.js'),
-                module_path($this->moduleName, 'stubs/jsconfig.json.stub') => base_path('jsconfig.json'),
-                module_path($this->moduleName, 'stubs/package.json.stub') => base_path('package.json'),
-                module_path($this->moduleName, 'stubs/tailwind.config.js.stub') => base_path('tailwind.config.js'),
-                module_path($this->moduleName, 'stubs/postcss.config.js.stub') => base_path('postcss.config.js'),
-                module_path($this->moduleName, 'stubs/vite.config.js.stub') => base_path('vite.config.js'),
-
-                module_path($this->moduleName, 'stubs/assets/js') => resource_path('js'),
-                module_path($this->moduleName, 'stubs/assets/manager.blade.stub') => resource_path('views/manager.blade.php'),
-                module_path($this->moduleName, 'stubs/assets/web') => resource_path('views/web'),
-            ], 'starter-assets');
         }
     }
 }
