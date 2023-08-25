@@ -4,12 +4,15 @@
 
 ## 模块安装
 
-### 安装依赖
-
 ```bash
-composer require jobsys/starter-module  --dev
-```
+# 安装依赖
+composer require jobsys/starter-module --dev
 
+# 启用模块
+php artisan module:enable Starter && php artisan module:publish-migration Starter && php artisan migrate
+
+
+```
 
 ### 配置
 
@@ -88,6 +91,7 @@ composer require jobsys/starter-module  --dev
 
 ## 模块代码
 
+
 ### 数据表
 
 ```bash
@@ -132,6 +136,7 @@ enum State: string
 ```
 
 ### 辅助函数
+
 
 #### 基础
 
