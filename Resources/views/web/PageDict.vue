@@ -42,7 +42,7 @@
 			:data="state.currentItem || null"
 			:form="getItemForm()"
 			:close="closeItemEditorModal"
-			:process-submit-data="onBeforeSubmitItem"
+			:before-submit="onBeforeSubmitItem"
 			@success="closeItemEditorModal(true)"
 		/>
 	</NewbieModal>
