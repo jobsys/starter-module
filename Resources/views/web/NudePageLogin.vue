@@ -158,7 +158,7 @@ const refreshVerifyCode = async () => {
 }
 
 const goRedirect = (role) => {
-	location.href = route("page.redirect", {role})
+	location.href = route("page.redirect", { role })
 }
 
 const doLogin = () => {
