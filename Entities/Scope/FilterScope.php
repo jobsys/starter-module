@@ -2,6 +2,7 @@
 
 namespace Modules\Starter\Entities\Scope;
 
+use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -93,14 +94,17 @@ class FilterScope implements Scope
 									'between' => $builder->whereBetween($prop, $query['value']),
 								};
 								break;
-							case "date":
-								$builder =  match ($query['condition']) {
-									'equal' => $builder->whereDate($prop, $query['value']),
-									'lessThan' => $builder->whereDate($prop, '<', $query['value']),
-									'greaterThan' => $builder->whereDate($prop, '>', $query['value']),
-									'between' => $builder->whereDate($prop, '>', $query['value'][0])->whereDate($prop, '<', $query['value'][1]),
-								};
-								break;
+                            case "date":
+
+                                $query['value'] = is_array($query['value']) ? collect($query['value'])->map(fn ($v) => land_predict_date_time($v, 'date'))->toArray() : land_predict_date_time($query['value'], 'date');
+
+                                $builder = match ($query['condition']) {
+                                    'equal' => $builder->whereDate($prop, $query['value']),
+                                    'lessThan' => $builder->whereDate($prop, '<', $query['value']),
+                                    'greaterThan' => $builder->whereDate($prop, '>', $query['value']),
+                                    'between' => $builder->whereBetween($prop, CarbonPeriod::between($query['value'][0], $query['value'][1]))
+                                };
+                                break;
 							case "textarea":
 								$builder =  match($query['condition']){
 									'equal' => $builder->whereIn($prop, $query['value']),
