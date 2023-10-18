@@ -66,54 +66,7 @@ class FilterScope implements Scope
 					if (isset($props[$prop])) {
 						$builder =  $props[$prop]($builder, $query);
 					} else {
-						switch ($query['type']) {
-							case "input":
-								$builder =  match ($query['condition']) {
-									'equal' => $builder->where($prop, $query['value']),
-									'notEqual' => $builder->where($prop, '!=', $query['value']),
-									'include' => $builder->where($prop, 'like', "%{$query['value']}%"),
-									'exclude' => $builder->where($prop, 'not like', "%{$query['value']}%"),
-									'null' => $builder->whereNull($prop),
-									'notNull' => $builder->whereNotNull($prop),
-								};
-								break;
-							case "select":
-								$builder =  match ($query['condition']) {
-									'equal' => $builder->where($prop, $query['value']),
-									'notEqual' => $builder->where($prop, '!=', $query['value']),
-									'include' => $builder->whereIn($prop, $query['value']),
-									'exclude' => $builder->whereNotIn($prop, $query['value']),
-								};
-								break;
-							case "number":
-								$builder =  match ($query['condition']) {
-									'equal' => $builder->where($prop, $query['value']),
-									'notEqual' => $builder->where($prop, '!=', $query['value']),
-									'lessThan' => $builder->where($prop, '<', $query['value']),
-									'greaterThan' => $builder->where($prop, '>', $query['value']),
-									'between' => $builder->whereBetween($prop, $query['value']),
-								};
-								break;
-                            case "date":
-
-                                $query['value'] = is_array($query['value']) ? collect($query['value'])->map(fn ($v) => land_predict_date_time($v, 'date'))->toArray() : land_predict_date_time($query['value'], 'date');
-
-                                $builder = match ($query['condition']) {
-                                    'equal' => $builder->whereDate($prop, $query['value']),
-                                    'lessThan' => $builder->whereDate($prop, '<', $query['value']),
-                                    'greaterThan' => $builder->whereDate($prop, '>', $query['value']),
-                                    'between' => $builder->whereBetween($prop, CarbonPeriod::between($query['value'][0], $query['value'][1]))
-                                };
-                                break;
-							case "textarea":
-								$builder =  match($query['condition']){
-									'equal' => $builder->whereIn($prop, $query['value']),
-									'exclude' => $builder->whereNotIn($prop, $query['value'])
-								};
-								break;
-							default:
-								break;
-						}
+                        $builder = land_filterable($prop, $builder, $query);
 					}
 				}
 
