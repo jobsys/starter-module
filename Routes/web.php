@@ -20,6 +20,7 @@ $route_name_prefix = $route_prefix ? $route_prefix . '.' : '';
 
 Route::prefix("{$route_url_prefix}starter")->name("page.{$route_name_prefix}starter.")->group(function () {
     Route::get('/dict', 'DictController@pageDict')->name('dict');
+    Route::get('/dict/item', 'DictController@pageDictItem')->name('dict.item');
 });
 
 

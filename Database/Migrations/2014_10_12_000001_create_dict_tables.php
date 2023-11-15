@@ -13,8 +13,8 @@ return new class extends Migration {
     {
         Schema::create('dictionaries', function (Blueprint $table) {
             $table->id();
-            $table->string('display_name')->nullable()->comment('显示名称');
-            $table->string('name')->index()->unique()->comment('名称');
+            $table->string('name')->nullable()->comment('显示名称');
+            $table->string('slug')->index()->unique()->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->boolean('is_active')->default(true)->comment('是否激活');
             $table->timestamps();
@@ -23,7 +23,8 @@ return new class extends Migration {
         Schema::create('dictionary_items', function (Blueprint $table) {
             $table->id();
             $table->integer('dictionary_id')->index()->comment('字典ID');
-            $table->string('display_name')->nullable()->comment('显示名称');
+            $table->string('name')->nullable()->comment('显示名称');
+			$table->integer('parent_id')->nullable()->default(0)->index('父级ID');
             $table->string('value')->comment('值');
             $table->boolean('is_active')->default(true)->comment('是否激活');
             $table->integer('sort_order')->default(0)->comment('排序:数字越大越靠前');
