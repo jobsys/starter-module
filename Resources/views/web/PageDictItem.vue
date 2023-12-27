@@ -6,7 +6,6 @@
 			:pagination="false"
 			:filterable="false"
 			:after-fetched="onAfterFetched"
-			:table-props="{ expandedRowKeys: state.expandedRowKeys }"
 			:columns="itemColumns()"
 		>
 			<template #functional>
@@ -61,12 +60,12 @@ const state = reactive({
 const addKeyToObjects = (data) => {
 	if (!Array.isArray(data)) {
 		// 不是数组，直接返回
-		state.expandedRowKeys.push(data.id)
+		//state.expandedRowKeys.push(data.id)
 		return { ...data, key: data.id }
 	}
 
 	return data.map((item) => {
-		state.expandedRowKeys.push(item.id)
+		//state.expandedRowKeys.push(item.id)
 		// 为每个对象添加 key 属性
 		item.key = item.id
 

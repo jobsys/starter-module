@@ -134,7 +134,7 @@ class DictController extends BaseManagerController
 			return $this->message($error);
 		}
 
-		$input['parent_id'] = $input['parent_id'] ?? 0;
+		$input['parent_id'] = $input['parent_id'] ?? null;
 
 		// 如果没有 value 则直接将显示名称当作 value
 		$input['value'] = $input['value'] ?? $input['name'];
@@ -160,7 +160,13 @@ class DictController extends BaseManagerController
 
 		$dictionary_id = $request->input('dictionary_id', false);
 
-		$items = land_classify(DictionaryItem::where('dictionary_id', $dictionary_id)->orderBy('sort_order', 'desc')->get());
+		$items = DictionaryItem::whereNull('parent_id')->where('dictionary_id', $dictionary_id)->get()->map(function(DictionaryItem $item){
+			$children = $item->getDescendants()->toTree()->toArray();
+			if($children && count($children)){
+				$item->{'children'} = $item->getDescendants()->toTree()->toArray();
+			}
+			return $item;
+		})->toArray();
 
 		log_access('查询字典值列表');
 

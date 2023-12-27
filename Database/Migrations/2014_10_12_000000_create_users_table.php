@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->json('avatar')->nullable()->comment('头像');
             $table->string('phone')->index()->nullable()->comment('电话');
             $table->string('email')->index()->nullable()->comment('邮箱');
+            $table->string('position')->index()->nullable()->comment('职位');
             $table->string('password')->nullable();
             $table->string('password_salt')->nullable();
             $table->dateTime('email_verified_at')->nullable()->comment('邮件验证发出时间');

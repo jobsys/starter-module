@@ -57,12 +57,22 @@ class FilterScope implements Scope
 			 * @param array $props 如果有自定义的查询方法，可以在这里添加
 			 * @return Builder
 			 */
-			function (Builder $builder, array $props = []) {
+			function (Builder $builder, array $props = [], array $config = []) {
 				$filters = request('newbieQuery');
+				if(is_string($filters)){
+					$filters = json_decode($filters, true);
+				}
 				if (empty($filters)) {
 					return $builder;
 				}
 				foreach ($filters as $prop => $query) {
+
+					//如果是级联查询，且是包含关系，且配置了级联模型，则将查询值转换为级联模型的子级ID
+					if($query['type'] === 'cascade' && $query['condition'] === 'include' && isset($config['cascade'][$prop])){
+						$value = is_array($query['value']) ? end($query['value']) : $query['value'];
+						$query['value'] = app($config['cascade'][$prop])->find($value)->descendantsWithSelf()->pluck('id')->toArray();
+					}
+
 					if (isset($props[$prop])) {
 						$builder =  $props[$prop]($builder, $query);
 					} else {
