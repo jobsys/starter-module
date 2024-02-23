@@ -9,16 +9,6 @@
 			"email": "sinceow@163.com"
 		}
 	],
-	"require": {
-		"inertiajs/inertia-laravel": "^0.6.9",
-		"laravel/framework": "^10.0",
-		"lizhichao/one-sm": "^1.10",
-		"mews/captcha": "^3.3",
-		"overtrue/laravel-pinyin": "^5.0",
-		"pion/laravel-chunk-upload": "^1.5",
-		"tightenco/ziggy": "^1.5",
-		"franzose/closure-table": "^v6.1.1"
-	},
 	"extra": {
 		"laravel": {
 			"providers": [],
