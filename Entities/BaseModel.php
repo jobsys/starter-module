@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Modules\Starter\Traits\Paginatable;
+use Modules\Starter\Traits\Sortable;
 
 class BaseModel extends Model
 {
-    use Paginatable;
+    use Paginatable, Sortable;
 
     protected array $methods = [];
 
