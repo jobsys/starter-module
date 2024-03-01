@@ -109,7 +109,7 @@ const props = defineProps({
 
 const state = reactive({
 	isPending: true,
-	loginFetcher: {loading: false},
+	loginFetcher: { loading: false },
 	loginForm: {
 		name: "",
 		password: "",
