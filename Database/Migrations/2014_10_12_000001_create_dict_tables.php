@@ -26,11 +26,11 @@ return new class extends Migration {
             $table->increments('id');
             $table->integer('dictionary_id')->index()->comment('字典ID');
             $table->string('name')->nullable()->comment('显示名称');
-            $table->integer('parent_id')->unsigned()->nullable()->index('父级ID');
-            $table->integer('position', false, true);
             $table->string('value')->comment('值');
             $table->boolean('is_active')->default(true)->comment('是否激活');
             $table->integer('sort_order')->default(0)->comment('排序:数字越大越靠前');
+            $table->integer('parent_id')->unsigned()->nullable()->index('父级ID');
+            $table->integer('position', false, true);
             $table->foreign('parent_id')
                 ->references('id')
                 ->on('dictionary_items')
