@@ -14,13 +14,17 @@ trait Paginatable
      */
     public function getPerPage(): int
     {
-        $perPage = request('page_size',10);
+        $perPage = request('page_size', false);
+
+        if (!$perPage) {
+            $perPage = request('pageSize', 10);
+        }
 
         if ($perPage === 'all') {
             $perPage = $this->count();
         }
 
-        return max(1, min($this->perPageMax, (int) $perPage));
+        return max(1, min($this->perPageMax, (int)$perPage));
     }
 
     /**
