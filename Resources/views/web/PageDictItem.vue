@@ -9,11 +9,11 @@
 			:columns="itemColumns()"
 		>
 			<template #functional>
-				<NewbieButton type="primary" :icon="h(PlusOutlined)" @click="onEditItem(false)"> ÐÂÔö{{ dictName }} </NewbieButton>
+				<NewbieButton type="primary" :icon="h(PlusOutlined)" @click="onEditItem(false)"> æ–°å¢ž{{ dictName }} </NewbieButton>
 			</template>
 		</NewbieTable>
 
-		<NewbieModal v-model:visible="state.showItemEditorModal" :title="`${dictName}±à¼­`" :width="600">
+		<NewbieModal v-model:visible="state.showItemEditorModal" :title="`${dictName}ç¼–è¾‘`" :width="600">
 			<NewbieForm
 				ref="editRef"
 				:submit-url="route('api.manager.starter.dict.item.edit')"
@@ -36,8 +36,8 @@ import { computed, h, inject, reactive, ref } from "vue"
 import { DeleteOutlined, EditOutlined, PlusOutlined } from "@ant-design/icons-vue"
 
 const props = defineProps({
-	error: { type: String, default: "" },
-	dictionary: { type: Object, default: () => ({}) },
+	error: {type: String, default: ""},
+	dictionary: {type: Object, default: () => ({})},
 })
 
 const tableRef = ref(null)
@@ -46,7 +46,7 @@ const editRef = ref(null)
 const route = inject("route")
 
 const dictName = computed(() => {
-	return props.dictionary?.name || "×ÖµäÏî"
+	return props.dictionary?.name || "å­—å…¸é¡¹"
 })
 
 const state = reactive({
@@ -59,17 +59,17 @@ const state = reactive({
 
 const addKeyToObjects = (data) => {
 	if (!Array.isArray(data)) {
-		// ²»ÊÇÊý×é£¬Ö±½Ó·µ»Ø
+		// ä¸æ˜¯æ•°ç»„ï¼Œç›´æŽ¥è¿”å›ž
 		//state.expandedRowKeys.push(data.id)
-		return { ...data, key: data.id }
+		return {...data, key: data.id}
 	}
 
 	return data.map((item) => {
 		//state.expandedRowKeys.push(item.id)
-		// ÎªÃ¿¸ö¶ÔÏóÌí¼Ó key ÊôÐÔ
+		// ä¸ºæ¯ä¸ªå¯¹è±¡æ·»åŠ  key å±žæ€§
 		item.key = item.id
 
-		// Èç¹ûÓÐ children ÊôÐÔ£¬µÝ¹éµ÷ÓÃ addKeyToObjects ´¦Àí×Ó½Úµã
+		// å¦‚æžœæœ‰ children å±žæ€§ï¼Œé€’å½’è°ƒç”¨ addKeyToObjects å¤„ç†å­èŠ‚ç‚¹
 		if (item.children && item.children.length > 0) {
 			item.children = addKeyToObjects(item.children)
 		}
@@ -86,20 +86,22 @@ const onAfterFetched = (res) => {
 }
 
 const getItemForm = () => {
-	return [
+	let items = [
 		{
 			key: "name",
-			title: `${dictName.value}Ãû³Æ`,
+			title: `${dictName.value}åç§°`,
 			required: true,
 		},
 		{
 			key: "value",
-			title: `${dictName.value}Öµ`,
-			help: `Áô¿Õ±íÊ¾¸ÃÖµÓë${dictName.value}Ãû³ÆÏàÍ¬`,
+			title: `${dictName.value}å€¼`,
+			help: `ç•™ç©ºè¡¨ç¤ºè¯¥å€¼ä¸Ž${dictName.value}åç§°ç›¸åŒ`,
 		},
-		{
+	]
+	if (props.dictionary.is_cascaded) {
+		items.push({
 			key: "parent_id",
-			title: `ÉÏ¼¶${dictName.value}`,
+			title: `ä¸Šçº§${dictName.value}`,
 			type: "tree-select",
 			options: state.options,
 			defaultProps: {
@@ -110,22 +112,26 @@ const getItemForm = () => {
 					value: "id",
 				},
 			},
-			help: `Áô¿Õ´ú±í¶¥¼¶${dictName.value}`,
-		},
+			help: `ç•™ç©ºä»£è¡¨é¡¶çº§${dictName.value}`,
+		})
+	}
+
+	items = items.concat([
 		{
 			key: "is_active",
-			title: "ÊÇ·ñÆôÓÃ",
+			title: "æ˜¯å¦å¯ç”¨",
 			type: "switch",
 			defaultValue: true,
 		},
 		{
 			key: "sort_order",
-			title: "ÅÅÐò",
+			title: "æŽ’åº",
 			type: "number",
 			defaultValue: 0,
-			help: "Êý×ÖÔ½´óÔ½¿¿Ç°",
+			help: "æ•°å­—è¶Šå¤§è¶Šé å‰",
 		},
-	]
+	])
+	return items
 }
 
 const onEditItem = (item) => {
@@ -142,13 +148,13 @@ const closeItemEditorModal = (isRefresh) => {
 
 const onDeleteItem = (item) => {
 	const modal = useModalConfirm(
-		`ÄúÈ·ÈÏÒªÉ¾³ý ${item.name} Âð£¿`,
+		`æ‚¨ç¡®è®¤è¦åˆ é™¤ ${item.name} å—ï¼Ÿ`,
 		async () => {
 			try {
-				const res = await useFetch().post(route("api.manager.starter.dict.item.delete"), { id: item.id })
+				const res = await useFetch().post(route("api.manager.starter.dict.item.delete"), {id: item.id})
 				modal.destroy()
 				useProcessStatusSuccess(res, () => {
-					message.success("É¾³ý³É¹¦")
+					message.success("åˆ é™¤æˆåŠŸ")
 					tableRef.value.doFetch()
 				})
 			} catch (e) {
@@ -159,7 +165,7 @@ const onDeleteItem = (item) => {
 	)
 }
 
-const onBeforeSubmitItem = ({ formatForm }) => {
+const onBeforeSubmitItem = ({formatForm}) => {
 	formatForm.dictionary_id = props.dictionary.id
 	return formatForm
 }
@@ -167,28 +173,28 @@ const onBeforeSubmitItem = ({ formatForm }) => {
 const itemColumns = () => {
 	return [
 		{
-			title: `${dictName.value}Ãû³Æ`,
+			title: `${dictName.value}åç§°`,
 			width: 140,
 			dataIndex: "name",
 		},
 		{
-			title: `${dictName.value}Öµ`,
+			title: `${dictName.value}å€¼`,
 			width: 140,
 			dataIndex: "value",
 		},
 		{
-			title: "ÅÅÐò",
+			title: "æŽ’åº",
 			width: 50,
 			dataIndex: "sort_order",
 		},
 		{
-			title: "ÊÇ·ñÆôÓÃ",
+			title: "æ˜¯å¦å¯ç”¨",
 			width: 100,
 			key: "is_active",
-			customRender({ record }) {
+			customRender({record}) {
 				return useTableActions({
 					type: "tag",
-					name: record.is_active ? "ÆôÓÃ" : "Òþ²Ø",
+					name: record.is_active ? "å¯ç”¨" : "éšè—",
 					props: {
 						color: record.is_active ? "green" : "red",
 					},
@@ -196,15 +202,15 @@ const itemColumns = () => {
 			},
 		},
 		{
-			title: "²Ù×÷",
+			title: "æ“ä½œ",
 			width: 120,
 			key: "operation",
 			align: "center",
 			fixed: "right",
-			customRender({ record }) {
+			customRender({record}) {
 				return useTableActions([
 					{
-						name: "±à¼­",
+						name: "ç¼–è¾‘",
 						props: {
 							icon: h(EditOutlined),
 							size: "small",
@@ -214,7 +220,7 @@ const itemColumns = () => {
 						},
 					},
 					{
-						name: "É¾³ý",
+						name: "åˆ é™¤",
 						props: {
 							icon: h(DeleteOutlined),
 							size: "small",

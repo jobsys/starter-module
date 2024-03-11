@@ -15,6 +15,7 @@ return new class extends Migration {
         Schema::create('dictionaries', function (Blueprint $table) {
             $table->id();
             $table->string('name')->nullable()->comment('显示名称');
+            $table->boolean('is_cascaded')->default(false)->comment('是否级联');
             $table->string('slug')->index()->unique()->comment('名称');
             $table->string('description')->nullable()->comment('描述');
             $table->boolean('is_active')->default(true)->comment('是否激活');

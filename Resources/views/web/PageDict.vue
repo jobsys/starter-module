@@ -54,6 +54,12 @@ const getForm = () => {
 			title: "字典描述",
 		},
 		{
+			key: "is_cascaded",
+			title: "是否级联",
+			type: "switch",
+			defaultValue: false,
+		},
+		{
 			key: "is_active",
 			title: "是否启用",
 			type: "switch",
@@ -148,7 +154,7 @@ const columns = () => {
 							size: "small",
 						},
 						action() {
-							router.visit(route("page.manager.starter.dict.item", { slug: record.slug }))
+							router.visit(route("page.manager.starter.dict.item", {slug: record.slug}))
 						},
 					},
 					{
