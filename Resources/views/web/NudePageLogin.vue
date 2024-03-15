@@ -1,7 +1,7 @@
 <template>
 	<div class="h-screen flex justify-center body-bg" :style="{ backgroundImage: 'url(' + Background + ')' }">
 		<div class="flex flex-col items-center w-5/6 sm:w-2/3 md:w-2/5 lg:w-1/3 xl:w-1/4">
-			<img :src="Logo" class="mt-10 mb-8 rounded h-1/5"/>
+			<img :src="logoUrl" class="mt-10 mb-8 rounded h-1/5"/>
 			<div
 				v-if="state.isPending"
 				class="w-full shadow-lg rounded bg-white transition duration-700 ease-in-out overflow-hidden hover:shadow-xl"
@@ -91,14 +91,15 @@ import { inject, onMounted, reactive, ref } from "vue"
 import { message } from "ant-design-vue"
 import { LockOutlined, UserOutlined, CalculatorOutlined } from "@ant-design/icons-vue"
 import { useSm3 } from "jobsys-newbie/hooks"
-import Logo from "@public/images/logo.png"
 import { useFetch, useProcessStatus } from "jobsys-newbie/hooks"
 import { cloneDeep } from "lodash-es"
 import Background from "@public/images/backgrounds/sun-tornado-dark-blue.svg"
+import { useLandCustomerAsset } from "@/js/hooks/land"
 
 const route = inject("route")
 const http = inject("http")
 const form = ref(null)
+const logoUrl = useLandCustomerAsset("/images/default/logo-large.png")
 
 const props = defineProps({
 	roleOptions: {
