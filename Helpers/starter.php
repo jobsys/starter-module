@@ -4,6 +4,23 @@ use App\Models\Department;
 use Modules\Permission\Entities\Permission;
 use Modules\Permission\Entities\Role;
 
+if (!function_exists('starter_setup')) {
+    /**
+     * 获取网站基本信息
+     * @return array
+     */
+    function starter_setup(): array
+    {
+        $customer = [
+            'code' => config('conf.customer_identify'),
+            'name' => config('conf.customer_name'),
+        ];
+
+        return compact('customer');
+    }
+}
+
+
 if (!function_exists('starter_setup_user')) {
     /**
      * 获取用户相关内容 [菜单, 权限, 部门, 个人信息, 是否超级管理员]
@@ -32,7 +49,9 @@ if (!function_exists('starter_setup_user')) {
 
         return compact('menus', 'permissions', 'profile', 'departments', 'is_super_admin');
     }
+}
 
+if (!function_exists('starter_get_user_menu')) {
     /**
      * 获取用户菜单
      * @param $user
@@ -73,7 +92,7 @@ if (!function_exists('starter_setup_user')) {
                 }
                 if (empty($menus[$index]['children'])) {
                     unset($menus[$index]);
-                }else{
+                } else {
                     $menus[$index]['children'] = array_values($menus[$index]['children']);
                 }
             }

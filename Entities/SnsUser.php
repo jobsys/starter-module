@@ -9,7 +9,8 @@ class SnsUser extends BaseModel
 {
 
     protected $casts = [
-        'bound_at' => 'datetime'
+        'bound_at' => 'datetime',
+	'is_auto_login' => 'boolean'
     ];
 
 
