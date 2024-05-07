@@ -171,17 +171,11 @@ class DictController extends BaseManagerController
             return $this->message('无该字典项');
         }
 
-        $items = DictionaryItem::whereNull('parent_id')->where('dictionary_id', $dictionary->id)->get();
-
         if ($dictionary->is_cascaded) {
-            $items = $items->map(function (DictionaryItem $item) {
-                $children = $item->getDescendants()->toTree()->toArray();
-                if ($children && count($children)) {
-                    $item->{'children'} = $item->getDescendants()->toTree()->toArray();
-                }
-
-                return $item;
-            })->toArray();
+            $items = DictionaryItem::where('dictionary_id', $dictionary->id)->orderByDesc('sort_order')->get()->toTree();
+            $items = land_tidy_tree($items, fn ($item) => $item);
+        } else {
+            $items = DictionaryItem::whereNull('parent_id')->where('dictionary_id', $dictionary->id)->orderByDesc('sort_order')->get();
         }
 
         log_access('查询字典值列表');
