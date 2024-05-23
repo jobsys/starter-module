@@ -30,5 +30,4 @@ Route::prefix("{$route_url_prefix}export")->name("export.{$route_name_prefix}sta
 
 
 Route::get('/login', [UserCgiController::class, 'pageLogin'])->name('page.login');
-Route::get('/redirect', [UserCgiController::class, 'redirect'])->name('page.redirect');
 Route::get('/logout', [UserCgiController::class, 'logout'])->name('page.logout');

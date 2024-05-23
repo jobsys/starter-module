@@ -3,7 +3,6 @@
 namespace Modules\Starter\Http\Controllers;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -92,7 +91,7 @@ class UserCgiController extends BaseController
 
 			auth()->login($user);
 
-			return $this->success($roles);
+			return $this->json();
 		} else {
 			$user->login_error_count = $user->login_error_count + 1;
 			$user->last_login_error_at = Carbon::now();
@@ -110,6 +109,12 @@ class UserCgiController extends BaseController
 	}
 
 
+	/**
+	 * 重定向
+	 * @param Request $request
+	 * @return \Illuminate\Http\RedirectResponse|\Inertia\Response
+	 * @deprecated 不再区分角色，直接登录，直接综合该用户的所有角色权限
+	 */
 	public function redirect(Request $request)
 	{
 		$role = $request->input('role', false);
@@ -119,9 +124,6 @@ class UserCgiController extends BaseController
 			return response()->redirectToRoute('page.login');
 		}
 
-		/**
-		 * @var $roles Collection
-		 */
 		$roles = auth()->user()->roles;
 
 		if ($roles->count() === 1) {
@@ -148,7 +150,8 @@ class UserCgiController extends BaseController
 	public function logout()
 	{
 		Auth::logout();
-		session()->flush();
+		//重新生成 Session ID 并同时删除所有 Session 里的数据
+		session()->invalidate();
 		return response()->redirectTo(route('page.login'));
 	}
 }

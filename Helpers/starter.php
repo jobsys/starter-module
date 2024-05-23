@@ -1,8 +1,7 @@
 <?php
 
 use App\Models\Department;
-use Modules\Permission\Entities\Permission;
-use Modules\Permission\Entities\Role;
+use Modules\Permission\Services\PermissionService;
 
 if (!function_exists('starter_setup')) {
     /**
@@ -28,12 +27,12 @@ if (!function_exists('starter_setup_user')) {
      */
     function starter_setup_user(): array
     {
-        $user = auth()->user();
-        $current_role = Role::where('name', session('user_role'))->first();
 
-        $permissions = $user->isSuperAdmin()
-            ? Permission::get(['name'])->pluck('name')->toArray()
-            : $current_role->permissions()->pluck('name')->toArray();
+		$service = app(PermissionService::class);
+
+        $user = auth()->user();
+
+        $permissions = $service->getCurrentUserPermissions();
         $departments = $user->isSuperAdmin()
             ? Department::get(['name', 'id'])->toArray()
             : $user->departments()->get(['name', 'id'])->toArray();
@@ -73,8 +72,7 @@ if (!function_exists('starter_get_user_menu')) {
         }
 
         if (!$permissions || !count($permissions)) {
-            $current_role = Role::where('name', session('user_role'))->first();
-            $permissions = $current_role->permissions->filter(function ($item) {
+            $permissions = $user->getAllPermissions()->filter(function ($item) {
                 return \Illuminate\Support\Str::startsWith($item->name, 'page.');
             })->pluck('name')->toArray();
         }

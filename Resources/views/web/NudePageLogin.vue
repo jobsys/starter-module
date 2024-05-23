@@ -1,9 +1,8 @@
 <template>
 	<div class="h-screen flex justify-center body-bg" :style="{ backgroundImage: 'url(' + Background + ')' }">
 		<div class="flex flex-col items-center w-5/6 sm:w-2/3 md:w-2/5 lg:w-1/3 xl:w-1/4">
-			<img :src="logoUrl" class="mt-10 mb-8 rounded h-1/5"/>
+			<img :src="logoUrl" class="mt-10 mb-8 rounded h-1/5" />
 			<div
-				v-if="state.isPending"
 				class="w-full shadow-lg rounded bg-white transition duration-700 ease-in-out overflow-hidden hover:shadow-xl"
 				@keydown.enter="doLogin"
 			>
@@ -11,10 +10,9 @@
 				<div class="mx-auto my-2 w-24 border-b-2 bg-gray-300 h-0.5 2xl:my-6"></div>
 				<a-form ref="form" :model="state.loginForm" :rules="state.loginFormRules">
 					<div class="px-8 py-4 md:py-4">
-						<input type="password" style="display: none"/>
+						<input type="password" style="display: none" />
 						<a-form-item name="name">
-							<a-input v-model:value="state.loginForm.name" placeholder="请输入用户名"
-									 autocomplete="false" size="large">
+							<a-input v-model:value="state.loginForm.name" placeholder="请输入用户名" autocomplete="false" size="large">
 								<template #prefix>
 									<UserOutlined></UserOutlined>
 								</template>
@@ -33,8 +31,7 @@
 							</a-input-password>
 						</a-form-item>
 						<a-form-item name="captcha">
-							<a-input v-model:value="state.loginForm.captcha" placeholder="请计算右侧算式答案"
-									 size="large">
+							<a-input v-model:value="state.loginForm.captcha" placeholder="请计算右侧算式答案" size="large">
 								<template #prefix>
 									<CalculatorOutlined></CalculatorOutlined>
 								</template>
@@ -53,17 +50,15 @@
 					</div>
 					<div class="px-10 py-6 bg-gray-100 border-t border-gray-100 flex justify-center items-center">
 						<a-form-item style="margin-bottom: 0">
-							<NewbieButton :fetcher="state.loginFetcher" type="primary" :button-props="{ size: 'large' }"
-										  block @click="doLogin"
-							>登录
+							<NewbieButton :fetcher="state.loginFetcher" type="primary" :button-props="{ size: 'large' }" block @click="doLogin"
+								>登录
 							</NewbieButton>
 						</a-form-item>
 					</div>
 				</a-form>
 			</div>
 
-			<div v-else
-				 class="w-full shadow-lg rounded bg-white transition duration-700 ease-in-out overflow-hidden hover:shadow-xl">
+			<!--			<div v-else class="w-full shadow-lg rounded bg-white transition duration-700 ease-in-out overflow-hidden hover:shadow-xl">
 				<h1 class="text-center font-bold text-xl mt-10 md:text-2xl">请选择您的角色</h1>
 				<div class="mx-auto my-2 w-24 border-b-2 bg-gray-300 h-0.5 2xl:my-6"></div>
 				<div class="py-3" v-if="state.roleOptions && state.roleOptions.length">
@@ -81,7 +76,7 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div>-->
 		</div>
 	</div>
 </template>
@@ -89,27 +84,29 @@
 <script setup>
 import { inject, onMounted, reactive, ref } from "vue"
 import { message } from "ant-design-vue"
-import { LockOutlined, UserOutlined, CalculatorOutlined } from "@ant-design/icons-vue"
-import { useSm3 } from "jobsys-newbie/hooks"
-import { useFetch, useProcessStatus } from "jobsys-newbie/hooks"
+import { CalculatorOutlined, LockOutlined, UserOutlined } from "@ant-design/icons-vue"
+import { useFetch, useProcessStatus, useSm3 } from "jobsys-newbie/hooks"
 import { cloneDeep } from "lodash-es"
 import Background from "@public/images/backgrounds/sun-tornado-dark-blue.svg"
 import { useLandCustomerAsset } from "@/js/hooks/land"
+import { router } from "@inertiajs/vue3"
 
 const route = inject("route")
 const http = inject("http")
 const form = ref(null)
 const logoUrl = useLandCustomerAsset("/images/default/logo-large.png")
 
+/*
 const props = defineProps({
 	roleOptions: {
 		type: Array,
 		default: () => [],
 	},
 })
+*/
 
 const state = reactive({
-	isPending: true,
+	//isPending: true,
 	loginFetcher: { loading: false },
 	loginForm: {
 		name: "",
@@ -158,10 +155,6 @@ const refreshVerifyCode = async () => {
 	state.captchaUrl = res.img
 }
 
-const goRedirect = (role) => {
-	location.href = route("page.redirect", { role })
-}
-
 const doLogin = () => {
 	form.value.validate().then(async () => {
 		try {
@@ -171,12 +164,7 @@ const doLogin = () => {
 			useProcessStatus(res, {
 				SUCCESS: () => {
 					message.success("登录成功")
-					if (res.result && res.result.length === 1) {
-						goRedirect(res.result[0].value)
-					} else {
-						state.isPending = false
-						state.roleOptions = res.result
-					}
+					router.visit(route("page.manager.dashboard"))
 				},
 				FAIL: () => {
 					message.error(res.result)
@@ -190,12 +178,13 @@ const doLogin = () => {
 }
 
 onMounted(() => {
-	if (props.roleOptions && props.roleOptions.length) {
+	refreshVerifyCode()
+	/*if (props.roleOptions && props.roleOptions.length) {
 		state.roleOptions = props.roleOptions
 		state.isPending = false
 	} else {
 		refreshVerifyCode()
-	}
+	}*/
 })
 </script>
 

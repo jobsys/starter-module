@@ -2,7 +2,6 @@
 
 namespace Modules\Starter\Entities\Scope;
 
-use Carbon\CarbonPeriod;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
@@ -70,7 +69,7 @@ class FilterScope implements Scope
 					//如果是级联查询，且是包含关系，且配置了级联模型，则将查询值转换为级联模型的子级ID
 					if($query['type'] === 'cascade' && $query['condition'] === 'include' && isset($config['cascade'][$prop])){
 						$value = is_array($query['value']) ? end($query['value']) : $query['value'];
-						$query['value'] = app($config['cascade'][$prop])->find($value)->descendantsWithSelf()->pluck('id')->toArray();
+						$query['value'] = app($config['cascade'][$prop])->ancestorsAndSelf($value)->pluck('id')->toArray();
 					}
 
 					if (isset($props[$prop])) {
