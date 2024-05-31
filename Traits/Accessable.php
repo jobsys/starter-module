@@ -11,157 +11,182 @@ use ReflectionClass;
 
 trait Accessable
 {
-	public static function cacheMutatedAttributes($classOrInstance): void
-	{
-		parent::cacheMutatedAttributes($classOrInstance);
+    public static function cacheMutatedAttributes($classOrInstance): void
+    {
+        parent::cacheMutatedAttributes($classOrInstance);
 
-		$reflection = new ReflectionClass($classOrInstance);
+        $reflection = new ReflectionClass($classOrInstance);
 
-		$class = $reflection->getName();
+        $class = $reflection->getName();
 
-		if (property_exists($class, 'accessors')) {
-			static::$mutatorCache[$class] = array_merge(static::$mutatorCache[$class], array_keys(with(new $class())->accessors));
-		}
-	}
+        if (property_exists($class, 'accessors')) {
+            static::$mutatorCache[$class] = array_merge(static::$mutatorCache[$class], array_keys(with(new $class())->accessors));
+        }
+    }
 
-	public function getAttributeValue($key)
-	{
-		$value = parent::getAttributeValue($key);
+    public function getAttributeValue($key)
+    {
+        $value = parent::getAttributeValue($key);
 
-		return $this->applyAccessors($key, $value);
-	}
+        return $this->applyAccessors($key, $value);
+    }
 
-	/**
-	 * @param $key
-	 * @param $value
-	 *
-	 * @return mixed
-	 */
-	protected function applyAccessors($key, $value): mixed
-	{
-		if (property_exists($this, 'accessors')) {
-			foreach ($this->accessors as $accessor => $params) {
+    /**
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
+     */
+    protected function applyAccessors($key, $value): mixed
+    {
+        if (property_exists($this, 'accessors')) {
+            foreach ($this->accessors as $accessor => $params) {
 
-				if ($key !== $accessor) {
-					continue;
-				}
+                if ($key !== $accessor) {
+                    continue;
+                }
 
-				list($mutator, $params) = $this->parseMutatorNameAndParams($params);
-
-
-				$value = match ($mutator) {
-					'file' => $this->mutateFiles($value, $params),
-					'date', 'datetime', 'human' => $this->mutateDatetime($value, $mutator),
-					'str' => sprintf("%.2f", $value)
-				};
-
-			}
-		}
-		return $value;
-	}
+                list($mutator, $params) = $this->parseMutatorNameAndParams($params);
 
 
-	/** Get the value of an attribute using its mutator.
-	 *
-	 * @param string $key
-	 * @param mixed $value
-	 *
-	 * @return mixed
-	 */
-	protected function mutateAttribute($key, $value): mixed
-	{
-		if (!array_key_exists($key, $this->accessors ?: [])) {
-			$value = parent::mutateAttribute($key, $value);
-		} elseif (method_exists($this, 'get' . Str::studly($key) . 'Attribute')) {
-			$value = parent::mutateAttribute($key, $value);
-		}
+                $value = match ($mutator) {
+                    'file' => $this->mutateFiles($value, $params),
+                    'date', 'datetime', 'human' => $this->mutateDatetime($value, $mutator),
+                    'str' => sprintf("%.2f", $value)
+                };
 
-		return $this->applyAccessors($key, $value);
-	}
+            }
+        }
+        return $value;
+    }
 
 
-	/**
-	 * Separates the accessors name from its optional parameters.
-	 *
-	 * @param string $mutator
-	 *
-	 * @return array
-	 */
-	protected function parseMutatorNameAndParams(string $mutator): array
-	{
-		$params = explode('|', $mutator);
-		$mutator = array_shift($params);
+    /** Get the value of an attribute using its mutator.
+     *
+     * @param string $key
+     * @param mixed $value
+     *
+     * @return mixed
+     */
+    protected function mutateAttribute($key, $value): mixed
+    {
+        if (!array_key_exists($key, $this->accessors ?: [])) {
+            $value = parent::mutateAttribute($key, $value);
+        } elseif (method_exists($this, 'get' . Str::studly($key) . 'Attribute')) {
+            $value = parent::mutateAttribute($key, $value);
+        }
 
-		return [$mutator, count($params) ? explode(",", $params[0]) : []];
-
-	}
-
-	/**
-	 * Laravel 使用 Carbon toJSON 转成标准 ISO 格式，时区为 UTC，这里不使用 ISO，避免时区信息丢失
-	 * Prepare a date for array / JSON serialization.
-	 *
-	 * @param \DateTimeInterface $date
-	 * @return string
-	 */
-	protected function serializeDate(DateTimeInterface $date): string
-	{
-		return $date->format('Y-m-d H:i:s');
-	}
+        return $this->applyAccessors($key, $value);
+    }
 
 
-	/**
-	 * 转换时间
-	 * @param $value
-	 * @param $type
-	 * @return string|null
-	 */
-	protected function mutateDatetime($value, $type): ?string
-	{
-		if (!$value) {
-			return null;
-		}
+    /**
+     * Separates the accessors name from its optional parameters.
+     *
+     * @param string $mutator
+     *
+     * @return array
+     */
+    protected function parseMutatorNameAndParams(string $mutator): array
+    {
+        $params = explode('|', $mutator);
+        $mutator = array_shift($params);
 
-		$datetime = Carbon::parse($value);
+        return [$mutator, count($params) ? explode(",", $params[0]) : []];
 
-		return match ($type) {
-			'date' => $datetime->toDateString(),
-			'datetime' => $datetime->format('Y-m-d H:i'),
-			'human' => $datetime->diffForHumans()
-		};
+    }
 
-	}
+    /**
+     * Laravel 使用 Carbon toJSON 转成标准 ISO 格式，时区为 UTC，这里不使用 ISO，避免时区信息丢失
+     * Prepare a date for array / JSON serialization.
+     *
+     * @param \DateTimeInterface $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date): string
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 
 
-	/**
-	 * 生成文件URL
-	 * @param $value
-	 * @param $params
-	 * @return array|string[]|null
-	 */
-	protected function mutateFiles($value, $params): ?array
-	{
-		$is_array = isset($params[0]) && $params[0];
-		$storage = $file_params[1] ?? null;
+    /**
+     * 转换时间
+     * @param $value
+     * @param $type
+     * @return string|null
+     */
+    protected function mutateDatetime($value, $type): ?string
+    {
+        if (!$value) {
+            return null;
+        }
 
-		if (empty($value)) {
-			return $is_array ? [] : null;
-		}
+        $datetime = Carbon::parse($value);
 
-		$disk = Storage::disk($storage ?: config('filesystems.default'));
+        return match ($type) {
+            'date' => $datetime->toDateString(),
+            'datetime' => $datetime->format('Y-m-d H:i'),
+            'human' => $datetime->diffForHumans()
+        };
 
-		if ($is_array) {
-			$values = json_decode($value, true);
+    }
 
-			if (!$values || count($values) === 0) {
-				return [];
-			} else {
-				return array_map(function ($value) use ($disk) {
-					return array_merge($value, $value['path'] ? ['url' => $disk->url($value['path'])] : []);
-				}, $values);
-			}
-		} else {
-			$value = json_decode($value, true);
-			return array_merge($value, $value['path'] ? ['url' => $disk->url($value['path'])] : []);
-		}
-	}
+
+    /**
+     * 生成文件URL
+     * @param $value
+     * @param $params
+     * @return array|string[]|null
+     */
+    protected function mutateFiles($value, $params): ?array
+    {
+        $is_array = isset($params[0]) && $params[0];
+        $storage = $file_params[1] ?? null;
+
+        if (empty($value)) {
+            return $is_array ? [] : null;
+        }
+
+        $disk = Storage::disk($storage ?: config('filesystems.default'));
+
+        if ($is_array) {
+            $values = is_string($value) ? json_decode($value, true) : $value;
+
+            if (count($values) === 0) {
+                return [];
+            } else {
+                return array_map(function ($value) use ($disk) {
+
+                    $url = !empty($value['path']) ? $disk->url($value['path']) : null;
+
+                    $thumb_url = null;
+
+                    if (land_is_image($value['path']) && $disk->exists(land_add_file_suffix($value['path']))) {
+                        $thumb_url = land_add_file_suffix($url);
+                    }
+
+                    return array_merge($value,
+                        ['url' => $url],
+                        $thumb_url ? ['thumbUrl' => $thumb_url] : [],
+                    );
+                }, $values);
+            }
+        } else {
+            $value = is_string($value) ? json_decode($value, true) : $value;
+
+            $url = !empty($value['path']) ? $disk->url($value['path']) : null;
+
+            //生成缩略图Path用于检测是否存在
+
+            $thumb_url = null;
+
+            if (land_is_image($value['path']) && $disk->exists(land_add_file_suffix($value['path']))) {
+                $thumb_url = land_add_file_suffix($url);
+            }
+
+            return array_merge($value, ['url' => $url],
+                $thumb_url ? ['thumbUrl' => $thumb_url] : []
+            );
+        }
+    }
 }
