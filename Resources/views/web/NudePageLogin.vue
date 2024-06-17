@@ -89,7 +89,6 @@ import { useFetch, useProcessStatus, useSm3 } from "jobsys-newbie/hooks"
 import { cloneDeep } from "lodash-es"
 import Background from "@public/images/backgrounds/sun-tornado-dark-blue.svg"
 import { useLandCustomerAsset } from "@/js/hooks/land"
-import { router } from "@inertiajs/vue3"
 
 const route = inject("route")
 const http = inject("http")
@@ -164,7 +163,7 @@ const doLogin = () => {
 			useProcessStatus(res, {
 				SUCCESS: () => {
 					message.success("登录成功")
-					router.visit(route("page.manager.dashboard"))
+					location.href = route("page.manager.dashboard")
 				},
 				FAIL: () => {
 					message.error(res.result)

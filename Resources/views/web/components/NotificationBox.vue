@@ -64,7 +64,6 @@
 <script setup>
 import { computed, inject, ref } from "vue"
 import { EnterOutlined } from "@ant-design/icons-vue"
-import { router } from "@inertiajs/vue3"
 import { useFetch, useProcessStatusSuccess } from "jobsys-newbie/hooks"
 import { message } from "ant-design-vue"
 
@@ -97,7 +96,7 @@ const setListRef = (el, key) => {
 const onView = (item) => {
 	useFetch().post(route("api.manager.starter.notification.read", {id: item.id}))
 	if (item.data?.url) {
-		router.visit(item.data.url)
+		window.location = item.data.url
 	}
 }
 
