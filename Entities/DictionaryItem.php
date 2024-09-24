@@ -9,6 +9,8 @@ class DictionaryItem extends BaseModel
 {
     use NodeTrait;
 
+    protected $model_name = "字典项";
+
     protected $hidden = [
         'created_at',
         'updated_at',

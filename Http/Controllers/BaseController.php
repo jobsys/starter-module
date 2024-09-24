@@ -8,13 +8,14 @@ use Modules\Starter\Emnus\State;
 
 class BaseController extends Controller
 {
-    /**
-     * 通用JSON返回
-     * @param $result
-     * @param $status
-     * @return JsonResponse
-     */
-    public function json($result = null, $status = State::SUCCESS): JsonResponse
+	/**
+	 * 通用JSON返回
+	 * @param null $result
+	 * @param string $status
+	 * @param string $result_key
+	 * @return JsonResponse
+	 */
+    public function json($result = null, string $status = State::SUCCESS, string $result_key = 'result'): JsonResponse
     {
         if (is_string($result) && $result == 'validation.captcha') {
             $status = config('starter.messages.STATE_CODE_CAPTCHA_ERROR');
@@ -25,7 +26,7 @@ class BaseController extends Controller
         if ($status != State::SUCCESS) {
             $status = config("starter.messages.{$status}");
             if ($result) {
-                $status['result'] = $result;
+                $status[$result_key] = $result;
             }
             return response()->json($status);
         }
@@ -34,7 +35,7 @@ class BaseController extends Controller
 
         return response()->json([
             'status' => $status['status'],
-            'result' => $result
+			$result_key => $result
         ]);
     }
 

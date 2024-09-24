@@ -7,42 +7,55 @@ use Modules\Starter\Entities\DictionaryItem;
 if (!function_exists('dict_get')) {
 	/**
 	 * 获取字典
-	 * @param string $slug
+	 * @param string|array $slug
 	 * @param bool $only_options
 	 * @param string $valueKey 值字段名
 	 * @return array|BaseModel|Dictionary|null
 	 */
-	function dict_get(string $slug, bool $only_options = true, string $valueKey = 'value'): BaseModel|array|Dictionary|null
+	function dict_get(string|array $slug, bool $only_options = true, string $valueKey = 'value'): BaseModel|array|Dictionary|null
 	{
-		$dict = Dictionary::with(['items' => function ($query) {
-			$query->where('is_active', 1)->orderBy('sort_order', 'desc')->orderBy('id', 'asc');
-		}])
-			->where('slug', $slug)->where('is_active', 1)
-			->first(['id', 'name', 'slug', 'description', 'is_active']);
 
-		if (!$dict || !$dict->items->count()) {
+		$is_single = !is_array($slug);
+
+		$dict_items = Dictionary::with(['items' => function ($query) {
+			$query->where('is_active', true)->orderByDesc('sort_order');
+		}])->where('is_active', true)
+			->where(function ($query) use ($is_single, $slug) {
+				if ($is_single) {
+					$query->where('slug', $slug);
+				} else {
+					$query->whereIn('slug', $slug);
+				}
+			})->select(['id', 'name', 'slug', 'description', 'is_active'])->orderBy('id')->get();
+
+		if ($is_single && (!$dict_items->count() || !$dict_items->first()->items->count())) {
 			return $only_options ? [] : null;
 		}
 
+
+		$options = [];
+
 		if ($only_options) {
-			$tree = DictionaryItem::whereNull('parent_id')->where('dictionary_id', $dict->id)->get()->map(function (DictionaryItem $item) use ($valueKey) {
-				$children = $item->getDescendants()->toTree()->toArray();
-				if ($children && count($children)) {
-					 $item->{'children'} = $children;
-					 return $item;
+			foreach ($dict_items as $dict) {
+				if ($dict->is_cascaded) {
+					$tree = $dict->items->toTree()->toArray();
+					if ($is_single) {
+						return land_tidy_tree($tree, fn($item) => ['label' => $item['name'], 'text' => $item['name'], 'value' => $item[$valueKey]]);
+					}
+
+					$options[$dict->slug] = land_tidy_tree($tree, fn($item) => ['label' => $item['name'], 'text' => $item['name'], 'value' => $item[$valueKey]]);
+				} else {
+					if ($is_single) {
+						return $dict->items->map(fn($item) => ['label' => $item['name'], 'text' => $item['name'], 'value' => $item[$valueKey]])->toArray();
+					}
+					$options[$dict->slug] = $dict->items->map(fn($item) => ['label' => $item['name'], 'text' => $item['name'], 'value' => $item[$valueKey]])->toArray();
 				}
-				return $item;
+			}
 
-			})->toArray();
-
-			return land_tidy_tree($tree, function ($item) use ($valueKey) {
-				return ['label' => $item['name'], 'text' => $item['name'], 'value' => $item[$valueKey]];
-			});
+			return $options;
 		}
 
-		return $dict;
-
-
+		return $is_single ? $dict_items->first() : $dict_items;
 	}
 }
 

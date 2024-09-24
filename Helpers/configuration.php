@@ -15,7 +15,7 @@ if (!function_exists('configuration_get')) {
 	 */
 	function configuration_get($module, $group = null, $name = null, $lang = null): Collection
 	{
-		if(!$lang){
+		if (!$lang) {
 			$lang = App::getLocale();
 		}
 
@@ -23,7 +23,7 @@ if (!function_exists('configuration_get')) {
 			$query->where('group', $group);
 		})->when($name, function ($query, $name) {
 			$query->where('name', $name);
-		})->when($lang, function($query, $lang){
+		})->when($lang, function ($query, $lang) {
 			$query->where('lang', $lang);
 		})->get();
 	}
@@ -36,13 +36,12 @@ if (!function_exists('configuration_get_first')) {
 	 * @param $module
 	 * @param $group
 	 * @param $name
+	 * @param string|null $lang
 	 * @return mixed
 	 */
-	function configuration_get_first($module, $group, $name, $lang = null): mixed
+	function configuration_get_first($module, $group, $name, string $lang = null): mixed
 	{
-		if(!$lang){
-			$lang =  App::getLocale();
-		}
+		$lang = $lang ?? App::getLocale();
 		return Configuration::where('module', $module)->where('group', $group)->where('name', $name)->where('lang', $lang)->first()?->value;
 	}
 }
@@ -56,18 +55,18 @@ if (!function_exists('configuration_save')) {
 	function configuration_save(array $configuration, bool $override = false): Configuration
 	{
 
-		if(!isset($configuration['lang']) || !$configuration['lang']){
+		if (!isset($configuration['lang']) || !$configuration['lang']) {
 			$configuration['lang'] = App::getLocale();
 		}
 
-		if($override){
+		if ($override) {
 			$model = Configuration::updateOrCreate([
 				'module' => $configuration['module'],
 				'group' => $configuration['group'],
 				'name' => $configuration['name'],
 				'lang' => $configuration['lang']
 			], $configuration);
-		}else{
+		} else {
 			$model = Configuration::create($configuration);
 		}
 

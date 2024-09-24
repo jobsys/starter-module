@@ -81,11 +81,7 @@ class UserCgiController extends BaseController
 			$user->last_login_ip = land_request_ip();
 			$user->save();
 
-			$roles = $user->roles()->get()->map(function ($role) {
-				return ['label' => $role->display_name, 'value' => $role->name];
-			});
-
-			if (!$roles->count()) {
+			if (!$user->roles()->count()) {
 				return $this->message('该账号无后台权限，请联系管理员');
 			}
 
@@ -134,12 +130,10 @@ class UserCgiController extends BaseController
 			if (!$role || !$roles->where('name', $role)->count()) {
 				Inertia::setRootView('manager');
 				return Inertia::render('NudePageLogin@Starter', [
-					'roleOptions' => $roles->map(function ($role) {
-						return ['label' => $role->display_name, 'value' => $role->name];
-					})
+					'roleOptions' => $roles->map(fn($role) => ['label' => $role->display_name, 'value' => $role->name])
 				]);
 			} else {
-				$role = $roles->where('name', $role)->first();
+				$role = $roles->firstWhere('name', $role);
 				session(['user_role' => $role->name]);
 				return $redirect_url ? response()->redirectTo($redirect_url) : response()->redirectToRoute('page.manager.dashboard');
 			}

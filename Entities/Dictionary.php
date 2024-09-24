@@ -3,11 +3,10 @@
 namespace Modules\Starter\Entities;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Modules\Starter\Traits\Filterable;
 
 class Dictionary extends BaseModel
 {
-    use Filterable;
+    protected $model_name = "字典";
 
     protected $casts = [
         'is_active' => 'boolean',

@@ -17,9 +17,9 @@ class CategoryController extends BaseManagerController
 
 		$items = Category::filterable()->where('module', $module)->when($group, function ($query, $group) {
 			return $query->where('group', $group);
-		})->where('homology_id', 0)->get();
+		})->whereNull('homology_id')->whereNull('parent_id')->get();
 
-		$items = land_classify($items);
+		$items = land_get_closure_tree($items);
 
 		return $this->json($items);
 	}
@@ -44,7 +44,7 @@ class CategoryController extends BaseManagerController
 	{
 
 		list($input, $error) = land_form_validate(
-			$request->only('id', 'parent_id', 'homology_id', 'lang', 'module', 'group', 'name', 'slug'),
+			$request->only('id', 'parent_id', 'homology_id', 'lang', 'module', 'group', 'name', 'slug', 'sort_order'),
 			[
 				'name' => 'bail|required|string',
 				'module' => 'bail|required|string',
@@ -67,21 +67,18 @@ class CategoryController extends BaseManagerController
 			return $this->message('该分类名称已经存在');
 		}
 
-		$input['parent_id'] = $input['parent_id'] ?? 0;
-		$input['homology_id'] = $input['homology_id'] ?? 0;
-
+		$input['lang'] = $input['lang'] ?? config('app.locale');
 
 		if (isset($input['id']) && $input['id']) {
 			$result = Category::where('id', $input['id'])->update($input);
 		} else {
 			if (!isset($input['slug']) || !$input['slug']) {
 				if (!isset($input['homology_id']) || !$input['homology_id']) {
-					$slug = pinyin_abbr($input['name']);
+					$slug = collect(pinyin_abbr($input['name']))->join('');
 					$index = 1;
 					while (!land_is_model_unique(['slug' => $slug], Category::class, 'slug', true, [
 						'module' => $input['module'],
 						'group' => $input['group'],
-						'homology_id' => 0
 					])) {
 						$slug = $slug . $index;
 						$index += 1;
@@ -99,9 +96,6 @@ class CategoryController extends BaseManagerController
 			$result = Category::updateOrCreate(['module' => $input['module'], 'group' => $input['group'], 'slug' => $input['slug'], 'lang' => $input['lang']], $input);
 
 		}
-
-
-		log_access(isset($input['id']) && $input['id'] ? '编辑分类' : '新建分类', $input['id'] ?? $result->id);
 
 		return $this->json(null, $result ? State::SUCCESS : State::FAIL);
 	}
@@ -122,7 +116,6 @@ class CategoryController extends BaseManagerController
 
 		$result = $item->delete();
 
-		log_access('删除分类', $id);
 		return $this->json(null, $result ? State::SUCCESS : State::FAIL);
 	}
 }

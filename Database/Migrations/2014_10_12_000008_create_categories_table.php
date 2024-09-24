@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->integer('homology_id')->default(0)->comment('同源ID');
+            $table->integer('homology_id')->nullable()->comment('同源ID');
             $table->string('lang')->default('zh_CN')->nullable()->index()->comment('语言');
             $table->string('module')->index()->comment('所属模块');
             $table->string('group')->index()->nullable()->comment('分组');

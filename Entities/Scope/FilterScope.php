@@ -5,6 +5,8 @@ namespace Modules\Starter\Entities\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Support\Str;
+use Kalnoy\Nestedset\NodeTrait;
 
 
 class FilterScope implements Scope
@@ -71,12 +73,21 @@ class FilterScope implements Scope
 					//如果是级联查询，且是包含关系，且配置了级联模型，则将查询值转换为级联模型的子级ID
 					if ($query['type'] === 'cascade' && $query['condition'] === 'include' && isset($config['cascade'][$prop])) {
 						$value = is_array($query['value']) ? end($query['value']) : $query['value'];
-						$query['value'] = app($config['cascade'][$prop])->ancestorsAndSelf($value)->pluck('id')->toArray();
+
+						/**
+						 * @var NodeTrait $entity
+						 */
+						$entity = app($config['cascade'][$prop]);
+						$query['value'] = $entity->descendantsAndSelf($value)->pluck('id')->toArray();
 					}
 
-					if (isset($props[$prop])) {
+					if (isset($props[$prop])) { //判断自定规则
 						$builder = $props[$prop]($builder, $query);
-					} else {
+					} else if (Str::contains($prop, '.')) { //判断关联规则，使用关联规则前需自行使用 with 加载关联
+						$relations = collect(explode('.', $prop));
+						$relation_prop = $relations->pop(); // 最后一项是属性，前面都是关联
+						$builder = $builder->whereHas($relations->join('.'), fn($sub_query) => land_filterable($relation_prop, $sub_query, $query));
+					} else { //普通规则
 						$builder = land_filterable($prop, $builder, $query);
 					}
 				}

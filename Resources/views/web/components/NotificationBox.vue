@@ -35,8 +35,7 @@
 							</template>
 							<template #extra>
 								<div>
-									<a-button type="text" size="small" :disabled="Boolean(item.read_at)"
-											  @click="markAsRead(item)">
+									<a-button type="text" size="small" :disabled="Boolean(item.read_at)" @click="markAsRead(item)">
 										标记已读
 									</a-button>
 									<a-popconfirm title="是否删除当前消息?" @confirm="onDelete(item)">
@@ -94,7 +93,7 @@ const setListRef = (el, key) => {
 }
 
 const onView = (item) => {
-	useFetch().post(route("api.manager.starter.notification.read", {id: item.id}))
+	useFetch().post(route("api.manager.starter.notification.read", { id: item.id }))
 	if (item.data?.url) {
 		window.location = item.data.url
 	}
@@ -102,7 +101,7 @@ const onView = (item) => {
 
 const onDelete = async (item) => {
 	props.useStore.deleteItem(item, currentTab.value)
-	const res = await useFetch().post(route("api.manager.starter.notification.delete", {id: item.id}))
+	const res = await useFetch().post(route("api.manager.starter.notification.delete", { id: item.id }))
 	useProcessStatusSuccess(res, () => {
 		props.useStore.deleteItem(item, currentTab.value)
 		message.success("删除成功")
@@ -110,7 +109,7 @@ const onDelete = async (item) => {
 }
 
 const markAsRead = async (item) => {
-	const res = await useFetch().post(route("api.manager.starter.notification.read", {id: item.id}))
+	const res = await useFetch().post(route("api.manager.starter.notification.read", { id: item.id }))
 	useProcessStatusSuccess(res, () => {
 		props.useStore.read(item, currentTab.value)
 		message.success("标记成功")
@@ -118,7 +117,7 @@ const markAsRead = async (item) => {
 }
 
 const markAllAsRead = async () => {
-	const res = await useFetch().post(route("api.manager.starter.notification.read-all", {type: currentTab.value}))
+	const res = await useFetch().post(route("api.manager.starter.notification.read-all", { type: currentTab.value }))
 
 	useProcessStatusSuccess(res, () => {
 		props.useStore.readAll(currentTab.value)
@@ -127,7 +126,7 @@ const markAllAsRead = async () => {
 }
 
 const onDeleteAll = async () => {
-	const res = await useFetch().post(route("api.manager.starter.notification.delete-all", {type: currentTab.value}))
+	const res = await useFetch().post(route("api.manager.starter.notification.delete-all", { type: currentTab.value }))
 
 	useProcessStatusSuccess(res, () => {
 		props.useStore.deleteAll(currentTab.value)

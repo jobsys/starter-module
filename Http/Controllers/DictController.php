@@ -55,7 +55,6 @@ class DictController extends BaseManagerController
 
         $item = Dictionary::updateOrCreate(['id' => $input['id'] ?? 0], $input);
 
-        log_access(isset($input['id']) && $input['id'] ? '修改字典' : '新增字典', $item->name);
 
         return $this->json($item);
     }
@@ -68,7 +67,6 @@ class DictController extends BaseManagerController
             },
         ])->orderBy('id', 'desc')->paginate();
 
-        log_access('查询字典列表');
 
         return $this->json($pagination);
     }
@@ -82,7 +80,7 @@ class DictController extends BaseManagerController
             return $this->message('字典不存在');
         }
 
-        log_access('查询字典', $item->slug);
+        log_access('查看字典详情', $item);
 
         return $this->json($item);
     }
@@ -101,8 +99,6 @@ class DictController extends BaseManagerController
 
         $item->delete();
 
-        log_access('删除字典', $item->slug);
-
         return $this->json($item);
     }
 
@@ -116,7 +112,7 @@ class DictController extends BaseManagerController
             return view('errors.404');
         }
 
-        log_access('字典项导出', $id);
+        log_access('字典项导出', $item);
 
         return (new DictExporter($id))->download("{$item->name}字典项导出.xlsx");
     }
@@ -148,8 +144,6 @@ class DictController extends BaseManagerController
 
         $item = DictionaryItem::updateOrCreate(['id' => $input['id'] ?? 0], $input);
 
-        log_access(isset($input['id']) && $input['id'] ? '修改字典项' : '新增字典项', $item->name);
-
         return $this->json($item);
     }
 
@@ -178,8 +172,6 @@ class DictController extends BaseManagerController
             $items = DictionaryItem::whereNull('parent_id')->where('dictionary_id', $dictionary->id)->orderByDesc('sort_order')->get();
         }
 
-        log_access('查询字典值列表');
-
         return $this->json($items);
     }
 
@@ -194,8 +186,6 @@ class DictController extends BaseManagerController
         }
 
         $item->delete();
-
-        log_access('删除字典项', $item->name);
 
         return $this->json($item);
     }

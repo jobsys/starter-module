@@ -240,9 +240,21 @@ const getForm = () => [
 		help: "留空为顶级分类",
 		type: "tree-select",
 		options: state.categoryOptions,
+		width: 400,
 		defaultProps: {
+			treeNodeFilterProp: "name",
 			fieldNames: { label: "name", value: "id", children: "children" },
 		},
+	},
+	{
+		key: "sort_order",
+		title: "排序",
+		type: "number",
+		defaultProps: {
+			min: 0,
+		},
+		position: "right",
+		help: "数字越大越靠前",
 	},
 	{
 		title: "分类标识",
@@ -319,6 +331,12 @@ const getColumns = () => [
 		title: "分类标识",
 		dataIndex: "slug",
 		width: 120,
+	},
+	{
+		title: "排序",
+		width: 50,
+		dataIndex: "sort_order",
+		key: "sort_order",
 	},
 	{
 		title: "操作",

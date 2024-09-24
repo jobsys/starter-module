@@ -5,11 +5,12 @@ namespace Modules\Starter\Entities;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Kalnoy\Nestedset\NodeTrait;
-use Modules\Starter\Traits\Filterable;
 
 class Category extends BaseModel
 {
-    use Filterable, NodeTrait;
+    use NodeTrait;
+
+    protected $model_name = "分类";
 
     protected $hidden = [
         '_lft',
