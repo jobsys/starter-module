@@ -14,18 +14,15 @@
 use Illuminate\Support\Facades\Route;
 use Modules\Starter\Http\Controllers\UserCgiController;
 
-$route_prefix = config('starter.route_prefix', 'manager');
-$route_url_prefix = $route_prefix ? $route_prefix . '/' : '';
-$route_name_prefix = $route_prefix ? $route_prefix . '.' : '';
 
-Route::prefix("{$route_url_prefix}starter")->name("page.{$route_name_prefix}starter.")->group(function () {
-    Route::get('/dict', 'DictController@pageDict')->name('dict');
-    Route::get('/dict/item', 'DictController@pageDictItem')->name('dict.item');
+Route::prefix("manager/starter")->name("page.manager.starter.")->group(function () {
+	Route::get('/dict', 'DictController@pageDict')->name('dict');
+	Route::get('/dict/item', 'DictController@pageDictItem')->name('dict.item');
+	Route::get('/log', 'LogController@pageLog')->name('log');
 });
 
-
-Route::prefix("{$route_url_prefix}export")->name("export.{$route_name_prefix}starter.")->group(function () {
-    Route::get('/dict', 'DictController@export')->name('dict');
+Route::prefix("manager/export")->name("export.manager.starter.")->group(function () {
+	Route::get('/dict', 'DictController@export')->name('dict');
 });
 
 

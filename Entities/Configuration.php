@@ -3,19 +3,20 @@
 namespace Modules\Starter\Entities;
 
 
-use Illuminate\Database\Eloquent\Model;
-use Modules\Starter\Traits\Accessable;
+use Modules\Starter\Traits\Snapshotable;
 
-class Configuration extends Model
+class Configuration extends BaseModel
 {
 
-    use Accessable;
+	use Snapshotable;
 
-    protected $casts = [
-        'value' => 'array',
-    ];
+	protected $model_name = "系统配置项";
 
-    protected $accessors = [
-        'value' => 'file|*',
-    ];
+	protected $casts = [
+		'value' => 'array',
+	];
+
+	protected $accessors = [
+		'value' => 'file|*',
+	];
 }

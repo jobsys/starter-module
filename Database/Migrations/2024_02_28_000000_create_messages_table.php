@@ -21,6 +21,7 @@ return new class extends Migration {
 			$table->string('status')->nullable()->comment('消息状态');
 			$table->string('remark')->nullable()->comment('备注');
 			$table->timestamps();
+			$table->comment('消息表');
 		});
 	}
 

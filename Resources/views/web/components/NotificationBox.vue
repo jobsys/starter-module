@@ -47,7 +47,7 @@
 					</template>
 				</NewbieList>
 
-				<a-divider class="my-4"></a-divider>
+				<a-divider class="my-4!"></a-divider>
 				<div class="pb-4">
 					<a-popconfirm title="是否全部标记已读?" @confirm="markAllAsRead">
 						<a-button type="text">全部{{ tab.title.replace("全部", "") }}标记已读</a-button>
@@ -80,7 +80,7 @@ const props = defineProps({
 const notificationMap = computed(() => props.useStore.notificationMap)
 
 const route = inject("route")
-const currentTab = ref("all")
+const currentTab = ref("todo")
 const listRefs = []
 
 const tabs = computed(() => props.useStore.notificationTabs)

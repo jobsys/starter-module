@@ -3,48 +3,47 @@
 namespace Modules\Starter\Http\Controllers;
 
 use App\Http\Controllers\BaseManagerController;
-use Illuminate\Http\Request;
 use Modules\Starter\Emnus\State;
 use Modules\Starter\Entities\Category;
 
 class CategoryController extends BaseManagerController
 {
 
-	public function items(Request $request)
+	public function items()
 	{
-		$module = $request->input('module');
-		$group = $request->input('group', false);
+		$module = request('module');
+		$group = request('group', false);
 
-		$items = Category::filterable()->where('module', $module)->when($group, function ($query, $group) {
-			return $query->where('group', $group);
-		})->whereNull('homology_id')->whereNull('parent_id')->get();
+		$items = Category::filterable()->where('module', $module)
+			->when($group, fn($query) => $query->where('group', $group))
+			->whereNull('homology_id')->whereNull('parent_id')->get();
 
 		$items = land_get_closure_tree($items);
 
 		return $this->json($items);
 	}
 
-	public function item(Request $request, $id)
+	public function item($id)
 	{
 		$item = Category::find($id);
 
 		return $this->json($item);
 	}
 
-	public function homologyItems(Request $request)
+	public function homologyItems()
 	{
-		$id = $request->input('id');
+		$id = request('id');
 
 		$items = Category::where('homology_id', $id)->get();
 
 		return $this->json($items);
 	}
 
-	public function edit(Request $request)
+	public function edit()
 	{
 
 		list($input, $error) = land_form_validate(
-			$request->only('id', 'parent_id', 'homology_id', 'lang', 'module', 'group', 'name', 'slug', 'sort_order'),
+			request()->only('id', 'parent_id', 'homology_id', 'lang', 'module', 'group', 'name', 'slug', 'sort_order'),
 			[
 				'name' => 'bail|required|string',
 				'module' => 'bail|required|string',
@@ -100,9 +99,9 @@ class CategoryController extends BaseManagerController
 		return $this->json(null, $result ? State::SUCCESS : State::FAIL);
 	}
 
-	public function delete(Request $request)
+	public function delete()
 	{
-		$id = $request->input('id');
+		$id = request('id');
 		$item = Category::where('id', $id)->first();
 
 		if (!$item) {

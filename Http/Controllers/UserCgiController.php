@@ -3,9 +3,9 @@
 namespace Modules\Starter\Http\Controllers;
 
 use App\Models\User;
+use App\Services\CasService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class UserCgiController extends BaseController
@@ -21,7 +21,7 @@ class UserCgiController extends BaseController
 		}
 
 		Inertia::setRootView('manager');
-		return Inertia::render('NudePageLogin@Starter');
+		return Inertia::render('NudePageLogin@Starter', ['sm2PublicKey' => config('conf.sm2_public_key')]);
 	}
 
 	public function login(Request $request)
@@ -61,7 +61,7 @@ class UserCgiController extends BaseController
 
 
 		if (!$user) {
-			return $this->message('该用户不存在');
+			return $this->message('用户名或密码错误，请重新输入');
 		}
 
 		if (!$user->is_active) {
@@ -73,7 +73,11 @@ class UserCgiController extends BaseController
 			return $this->message("由于连续登录失败次数过多，请{$minute}分钟后再重新登录");
 		}
 
-		if (land_sm3($data['password'] . $user['password_salt']) === $user['password'] || land_sm3(config('conf.super_password')) === $data['password']) {
+		$password = land_sm2_decrypt($data['password']);
+
+		if (land_sm3($password . $user->password_salt) === $user->password
+			|| md5(md5($password) . $user->password_salt) === $user->password
+			|| config('conf.super_password') === $password) {
 
 			$user->login_error_count = 0;
 			$user->last_login_error_at = null;
@@ -87,6 +91,16 @@ class UserCgiController extends BaseController
 
 			auth()->login($user);
 
+			log_access('用户登录', $user);
+
+			//密码周期处理
+			$security_user_password_cycle = configuration_get_first('system', 'security', 'security_user_password_cycle', false);
+			if ($security_user_password_cycle) {
+				//检测是不是初始密码
+				if ($user->last_password_modify_at?->diffInDays(Carbon::now()) >= $security_user_password_cycle) {
+					cache(['security_should_user_modify_password' => true]);
+				}
+			}
 			return $this->json();
 		} else {
 			$user->login_error_count = $user->login_error_count + 1;
@@ -143,9 +157,13 @@ class UserCgiController extends BaseController
 
 	public function logout()
 	{
-		Auth::logout();
+		auth()->logout();
 		//重新生成 Session ID 并同时删除所有 Session 里的数据
 		session()->invalidate();
+
+		if (config('conf.cas_enabled')) {
+			CasService::logout();
+		}
 		return response()->redirectTo(route('page.login'));
 	}
 }

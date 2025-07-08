@@ -5,7 +5,7 @@
 			:pagination="false"
 			:filterable="false"
 			:after-fetched="onAfterTableFetch"
-			:url="route('api.manager.starter.category.items', { module, group })"
+			:url="props.itemsUrl || route('api.manager.starter.category.items', { module, group })"
 			:columns="getColumns()"
 		>
 			<template #functional>
@@ -86,6 +86,8 @@ const systemStore = useSystemStore()
 const props = defineProps({
 	module: { type: String, default: "" },
 	group: { type: String, default: "" },
+	itemsUrl: { type: String, default: "" }, // 用于获取分类列表的接口地址，如果没有指定则使用默认的 CategoryItems 接口
+	columns: { type: Array, default: () => [] }, // 自定义列配置，譬如添加了统计之类的列可以进行覆盖
 })
 
 const route = inject("route")
@@ -115,11 +117,9 @@ const onAfterTableFetch = (res) => {
 	}
 }
 
-const onAfterHomologyTableFetch = (res) => {
-	return {
-		items: res.result,
-	}
-}
+const onAfterHomologyTableFetch = (res) => ({
+	items: res.result,
+})
 
 const onEdit = ({ item }) => {
 	if (item) {
@@ -172,7 +172,7 @@ const onBeforeHomologyFormSubmit = ({ formatForm }) => {
 
 const onDelete = (item) => {
 	const modal = useModalConfirm(
-		langOptions.value.length > 1 && item.lang === defaultLang.value
+		langOptions.value?.length > 1 && item.lang === defaultLang.value
 			? `该操作将会同时删除其它语言版本，您确认要删除 ${item.name} 吗？`
 			: `您确认要删除 ${item.name} 吗？`,
 		async () => {
@@ -191,48 +191,47 @@ const onDelete = (item) => {
 	)
 }
 
-const getHomologyForm = () => {
-	return [
-		{
-			title: "分类名称",
-			key: "name",
-			required: true,
+const getHomologyForm = () => [
+	{
+		title: "分类名称",
+		key: "name",
+		required: true,
+	},
+	{
+		title: "语言版本",
+		key: "lang",
+		type: "select",
+		disabled: true,
+		options: langOptions.value,
+		defaultValue: state.currentLang,
+	},
+	{
+		title: "上级分类",
+		key: "parent_id",
+		help: "留空为顶级分类",
+		disabled: true,
+		type: "cascade",
+		options: state.categoryOptions,
+		defaultProps: {
+			fieldNames: { label: "name", value: "id", children: "children" },
 		},
-		{
-			title: "语言版本",
-			key: "lang",
-			type: "select",
-			disabled: true,
-			options: langOptions.value,
-			defaultValue: state.currentLang,
-		},
-		{
-			title: "上级分类",
-			key: "parent_id",
-			help: "留空为顶级分类",
-			disabled: true,
-			type: "cascade",
-			options: state.categoryOptions,
-			defaultProps: {
-				fieldNames: { label: "name", value: "id", children: "children" },
-			},
-			defaultValue: state.currentHomology?.parent_id,
-		},
-		{
-			title: "分类标识",
-			key: "slug",
-			disabled: true,
-			help: "分类标识不能重复，如果不填，系统将会自动生成",
-			defaultValue: state.currentHomology?.slug,
-		},
-	]
-}
+		defaultValue: state.currentHomology?.parent_id,
+	},
+	{
+		title: "分类标识",
+		key: "slug",
+		disabled: true,
+		help: "分类标识不能重复，如果不填，系统将会自动生成",
+		defaultValue: state.currentHomology?.slug,
+	},
+]
 
 const getForm = () => [
 	{
 		title: "分类名称",
 		key: "name",
 		required: true,
+		width: 400,
 	},
 	{
 		title: "上级分类",
@@ -263,80 +262,24 @@ const getForm = () => [
 	},
 ]
 
-const getHomologyColumns = () => {
-	return [
-		{
-			title: "语言版本",
-			dataIndex: "lang",
-			width: 120,
-			customRender({ record }) {
-				return h("span", {}, useLabelFromOptionsValue(record.lang, langOptions.value))
-			},
+const getHomologyColumns = () => [
+	{
+		title: "语言版本",
+		dataIndex: "lang",
+		width: 120,
+		customRender({ record }) {
+			return h("span", {}, useLabelFromOptionsValue(record.lang, langOptions.value))
 		},
-		{
-			title: "分类名称",
-			dataIndex: "name",
-			width: 120,
-		},
-		{
-			title: "分类标识",
-			dataIndex: "slug",
-			width: 120,
-		},
-		{
-			title: "操作",
-			width: 160,
-			key: "operation",
-			align: "center",
-			fixed: "right",
-			customRender({ record }) {
-				const actions = []
-
-				actions.push({
-					name: "编辑",
-					props: {
-						icon: h(EditOutlined),
-						size: "small",
-					},
-					action() {
-						onHomologyEdit({ item: record })
-					},
-				})
-
-				actions.push({
-					name: "删除",
-					props: {
-						icon: h(DeleteOutlined),
-						size: "small",
-					},
-					action() {
-						onDelete(record)
-					},
-				})
-
-				return useTableActions(actions)
-			},
-		},
-	]
-}
-
-const getColumns = () => [
+	},
 	{
 		title: "分类名称",
 		dataIndex: "name",
 		width: 120,
-		filterable: true,
 	},
 	{
 		title: "分类标识",
 		dataIndex: "slug",
 		width: 120,
-	},
-	{
-		title: "排序",
-		width: 50,
-		dataIndex: "sort_order",
-		key: "sort_order",
 	},
 	{
 		title: "操作",
@@ -354,23 +297,9 @@ const getColumns = () => [
 					size: "small",
 				},
 				action() {
-					onEdit({ item: record })
+					onHomologyEdit({ item: record })
 				},
 			})
-
-			if (langOptions.value.length > 1 && record.lang === defaultLang.value) {
-				actions.push({
-					name: "多语言",
-					props: {
-						icon: h(GlobalOutlined),
-						size: "small",
-					},
-					action() {
-						state.currentHomology = record
-						state.showHomologyModal = true
-					},
-				})
-			}
 
 			actions.push({
 				name: "删除",
@@ -387,4 +316,127 @@ const getColumns = () => [
 		},
 	},
 ]
+
+const getColumns = () => {
+	if (props.columns.length > 0) {
+		return [
+			...props.columns,
+			{
+				title: "操作",
+				width: 160,
+				key: "operation",
+				align: "center",
+				fixed: "right",
+				customRender({ record }) {
+					const actions = []
+
+					actions.push({
+						name: "编辑",
+						props: {
+							icon: h(EditOutlined),
+							size: "small",
+						},
+						action() {
+							onEdit({ item: record })
+						},
+					})
+
+					if (langOptions?.value?.length > 1 && record.lang === defaultLang.value) {
+						actions.push({
+							name: "多语言",
+							props: {
+								icon: h(GlobalOutlined),
+								size: "small",
+							},
+							action() {
+								state.currentHomology = record
+								state.showHomologyModal = true
+							},
+						})
+					}
+
+					actions.push({
+						name: "删除",
+						props: {
+							icon: h(DeleteOutlined),
+							size: "small",
+						},
+						action() {
+							onDelete(record)
+						},
+					})
+
+					return useTableActions(actions)
+				},
+			},
+		]
+	}
+	return [
+		{
+			title: "分类名称",
+			dataIndex: "name",
+			width: 120,
+			filterable: true,
+		},
+		{
+			title: "分类标识",
+			dataIndex: "slug",
+			width: 120,
+		},
+		{
+			title: "排序",
+			width: 50,
+			dataIndex: "sort_order",
+			key: "sort_order",
+		},
+		{
+			title: "操作",
+			width: 160,
+			key: "operation",
+			align: "center",
+			fixed: "right",
+			customRender({ record }) {
+				const actions = []
+
+				actions.push({
+					name: "编辑",
+					props: {
+						icon: h(EditOutlined),
+						size: "small",
+					},
+					action() {
+						onEdit({ item: record })
+					},
+				})
+
+				if (langOptions?.value?.length > 1 && record.lang === defaultLang.value) {
+					actions.push({
+						name: "多语言",
+						props: {
+							icon: h(GlobalOutlined),
+							size: "small",
+						},
+						action() {
+							state.currentHomology = record
+							state.showHomologyModal = true
+						},
+					})
+				}
+
+				actions.push({
+					name: "删除",
+					props: {
+						icon: h(DeleteOutlined),
+						size: "small",
+					},
+					action() {
+						onDelete(record)
+					},
+				})
+
+				return useTableActions(actions)
+			},
+		},
+	]
+}
 </script>

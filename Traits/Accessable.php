@@ -108,7 +108,9 @@ trait Accessable
 	 */
 	protected function mutateArea($value): ?array
 	{
-		if (empty($value)) {
+
+		//如果没有 $value 或者是 $value 不是 6位数字，直接返回 null
+		if (empty($value) || !is_numeric($value) || strlen($value) !== 6) {
 			return null;
 		}
 

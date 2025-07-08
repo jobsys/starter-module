@@ -19,6 +19,7 @@ return new class extends Migration {
 			$table->dateTime('bound_at')->nullable()->comment('绑定时间');
 			$table->boolean('is_auto_login')->default(true)->comment('是否自动登录，一般在退出登录后设置为 false');
 			$table->timestamps();
+			$table->comment('第三方登录用户关联表');
 		});
 
 	}

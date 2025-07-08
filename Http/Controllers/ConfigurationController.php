@@ -36,7 +36,7 @@ class ConfigurationController extends BaseManagerController
 		}
 
 		foreach ($input['configurations'] as $configuration) {
-			configuration_save($configuration, true);
+			configuration_save($configuration);
 		}
 
 		log_access("编辑{$input['configurations'][0]['module']}配置项");

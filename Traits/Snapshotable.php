@@ -3,7 +3,7 @@
 namespace Modules\Starter\Traits;
 
 
-use Carbon\Carbon;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Modules\Starter\Entities\Snapshot;
 
@@ -13,9 +13,9 @@ use Modules\Starter\Entities\Snapshot;
 trait Snapshotable
 {
 	/**
-	 *  Return collection of snapshot rows related to current model
+	 * 快照关联
 	 *
-	 * @return \Illuminate\Database\Eloquent\Collection
+	 * @return MorphMany
 	 */
 	public function snapshots(): MorphMany
 	{
@@ -25,25 +25,30 @@ trait Snapshotable
 	/**
 	 * 生成快照
 	 * @param array|null $snapshot 快照内容，默认为当前模型的原始数据
-	 * @param int|null $snapshot_user_id 操作者ID，默认为当前登录用户
+	 * @param Authenticatable|null $snapshoter
 	 * @param mixed $snapshot_at 快照时间，默认为当前时间
 	 * @return Snapshot|null
 	 */
-	public function snapshot(array $snapshot = null, int $snapshot_user_id = null, mixed $snapshot_at = null): Snapshot|null
+	public function snapshot(array $snapshot = null, Authenticatable $snapshoter = null, mixed $snapshot_at = null): Snapshot|null
 	{
 
 		if (!$snapshot) {
 			$snapshot = $this->getOriginal();
 		}
 
-		if (!$snapshot_user_id) {
-			$snapshot_user_id = auth()->check() ? auth()->id() : null;
+		if (!$snapshoter) {
+			$snapshoter = auth()->user();
 		}
 
 		if (!$snapshot_at) {
-			$snapshot_at = Carbon::now();
+			$snapshot_at = now();
 		}
 
-		return $this->snapshots()->create(compact('snapshot', 'snapshot_user_id', 'snapshot_at'));
+		return $this->snapshots()->create([
+			'snapshot' => $snapshot,
+			'snapshoter_type' => get_class($snapshoter),
+			'snapshoter_id' => $snapshoter->getKey(),
+			'snapshot_at' => $snapshot_at
+		]);
 	}
 }

@@ -1,17 +1,17 @@
 <template>
-	<NewbieTable ref="listRef" :url="route('api.manager.starter.dict.items')" :columns="columns()" row-key="id">
+	<NewbieTable ref="tableRef" :url="route('api.manager.starter.dict.items')" :columns="tableColumns()">
 		<template #functional>
 			<NewbieButton type="primary" :icon="h(PlusOutlined)" @click="onEdit(false)">新增字典</NewbieButton>
 		</template>
 	</NewbieTable>
 	<NewbieModal v-model:visible="state.showEditorModal" title="字典编辑" :width="600">
 		<NewbieForm
-			ref="editRef"
+			ref="formRef"
 			:fetch-url="state.url"
 			:auto-load="!!state.url"
 			:submit-url="route('api.manager.starter.dict.edit')"
 			:card-wrapper="false"
-			:form="getForm()"
+			:form="formColumns()"
 			:close="closeEditorModal"
 			@success="closeEditorModal(true)"
 		/>
@@ -26,8 +26,8 @@ import { h, inject, reactive, ref } from "vue"
 import { DeleteOutlined, EditOutlined, ExportOutlined, OrderedListOutlined, PlusOutlined } from "@ant-design/icons-vue"
 import { router } from "@inertiajs/vue3"
 
-const listRef = ref(null)
-const editRef = ref(null)
+const tableRef = ref()
+const formRef = ref()
 
 const route = inject("route")
 
@@ -37,7 +37,7 @@ const state = reactive({
 	url: "",
 })
 
-const getForm = () => {
+const formColumns = () => {
 	return [
 		{
 			key: "name",
@@ -75,7 +75,7 @@ const onEdit = (item) => {
 
 const closeEditorModal = (isRefresh) => {
 	if (isRefresh) {
-		listRef.value.doFetch()
+		tableRef.value.doFetch()
 	}
 	state.showEditorModal = false
 }
@@ -89,7 +89,7 @@ const onDelete = (item) => {
 				modal.destroy()
 				useProcessStatusSuccess(res, () => {
 					message.success("删除成功")
-					listRef.value.doFetch()
+					tableRef.value.doFetch()
 				})
 			} catch (e) {
 				modal.destroy(e)
@@ -105,7 +105,7 @@ const onExport = (record) => {
 /**
  * @return {Array.<TableColunmConfig>}
  */
-const columns = () => {
+const tableColumns = () => {
 	return [
 		{
 			title: "字典名称",
@@ -154,7 +154,7 @@ const columns = () => {
 							size: "small",
 						},
 						action() {
-							router.visit(route("page.manager.starter.dict.item", {slug: record.slug}))
+							router.visit(route("page.manager.starter.dict.item", { slug: record.slug }))
 						},
 					},
 					{

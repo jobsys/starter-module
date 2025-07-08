@@ -61,7 +61,10 @@ class FilterScope implements Scope
 			 * @return Builder
 			 */
 			function (Builder $builder, array $props = [], array $config = [], array $newbieQuery = []) {
-				$filters = request('newbieQuery', $newbieQuery);
+				$filters = request('_q', false);//简约版，节省字符长度
+				if (!$filters) {
+					$filters = request('newbieQuery', $newbieQuery);
+				}
 				if (is_string($filters)) {
 					$filters = json_decode($filters, true);
 				}
@@ -70,8 +73,34 @@ class FilterScope implements Scope
 				}
 				foreach ($filters as $prop => $query) {
 
+					if (!empty($query['t'])) {
+						$query['type'] = $query['t'];
+					}
+					if (!empty($query['c'])) {
+						$query['condition'] = $query['c'];
+					}
+					if (!empty($query['v'])) {
+						$query['value'] = $query['v'];
+					}
+
+					if (!isset($query['type']) || in_array($query['type'], ['i', 'in', 'input'])) {
+						$query['type'] = 'input';
+					} elseif (in_array($query['type'], ['s', 'select'])) {
+						$query['type'] = 'select';
+					} elseif (in_array($query['type'], ['n', 'num', 'number'])) {
+						$query['type'] = 'number';
+					} elseif (in_array($query['type'], ['d', 'date', 'datetime'])) {
+						$query['type'] = 'datetime';
+					} elseif (in_array($query['type'], ['t', 'text', 'textarea'])) {
+						$query['type'] = 'textarea';
+					} elseif (in_array($query['type'], ['c', 'cascade'])) {
+						$query['type'] = 'cascade';
+					} elseif (in_array($query['type'], ['switch', 'boolean', 'bool'])) {
+						$query['type'] = 'boolean';
+					}
+
 					//如果是级联查询，且是包含关系，且配置了级联模型，则将查询值转换为级联模型的子级ID
-					if ($query['type'] === 'cascade' && $query['condition'] === 'include' && isset($config['cascade'][$prop])) {
+					if ($query['type'] === 'cascade' && in_array($query['condition'], ['include', 'in']) && isset($config['cascade'][$prop])) {
 						$value = is_array($query['value']) ? end($query['value']) : $query['value'];
 
 						/**
