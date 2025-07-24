@@ -38,6 +38,8 @@ class Tag extends BaseModel implements WithCustomizeAuthorisation
 {
 	use HasJsonRelationships, Authorisations;
 
+	protected $model_name = '标签';
+
 	protected $table = 'tagging_tags';
 
 	protected $casts = [

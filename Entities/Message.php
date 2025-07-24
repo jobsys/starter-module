@@ -2,23 +2,28 @@
 
 namespace Modules\Starter\Entities;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Message extends BaseModel
 {
+	protected $model_name = '消息';
 
-	const CHANNEL_WECHAT_OFFICIAL = 'official'; // 公众号
-	const CHANNEL_WECHAT_WORK = 'work'; // 企业微信
-	const CHANNEL_WECHAT_WEAPP = 'weapp'; // 小程序
-	const CHANNEL_SMS = 'sms'; // 短信
-
-	const STATUS_PENDING = 'pending';
-	const STATUS_SUCCESS = 'success';
-	const STATUS_FAIL = 'failed';
 
 	protected $casts = [
 		'data' => 'array',
+		'read_at' => 'datetime'
 	];
+
+	protected $accessors = [
+		'read_at' => 'datetime',
+		'created_at' => 'datetime'
+	];
+
+	public function batch(): BelongsTo
+	{
+		return $this->belongsTo(MessageBatch::class);
+	}
 
 	public function receiver(): MorphTo
 	{

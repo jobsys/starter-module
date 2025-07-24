@@ -22,6 +22,8 @@ use Modules\Starter\Services\TagService;
  */
 class TagGroup extends BaseModel
 {
+
+	protected $model_name = '标签组';
 	protected $table = 'tagging_tag_groups';
 
 	public $timestamps = false;

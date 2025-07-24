@@ -105,97 +105,99 @@ const onExport = (record) => {
 /**
  * @return {Array.<TableColunmConfig>}
  */
-const tableColumns = () => {
-	return [
-		{
-			title: "字典名称",
-			width: 160,
-			dataIndex: "name",
-			filterable: true,
+const tableColumns = () => [
+	{
+		title: "字典名称",
+		width: 160,
+		dataIndex: "name",
+		filterable: {
+			defaultCondition: "include",
 		},
-		{
-			title: "字典标识",
-			width: 160,
-			dataIndex: "slug",
-			filterable: true,
+	},
+	{
+		title: "字典标识",
+		width: 160,
+		dataIndex: "slug",
+		filterable: {
+			defaultCondition: "include",
 		},
-		{
-			title: "字典描述",
-			width: 160,
-			dataIndex: "description",
-			ellipsis: true,
+	},
+	{
+		title: "字典描述",
+		width: 160,
+		dataIndex: "description",
+		ellipsis: true,
+	},
+	{
+		title: "是否启用",
+		width: 100,
+		key: "is_active",
+		customRender({ record }) {
+			return useTableActions({
+				type: "tag",
+				name: record.is_active ? "启用" : "隐藏",
+				props: {
+					color: record.is_active ? "green" : "red",
+				},
+			})
 		},
-		{
-			title: "是否启用",
-			width: 100,
-			key: "is_active",
-			customRender({ record }) {
-				return useTableActions({
-					type: "tag",
-					name: record.is_active ? "启用" : "隐藏",
+	},
+	{
+		title: "操作",
+		width: 220,
+		key: "operation",
+		align: "center",
+		fixed: "right",
+		customRender({ record }) {
+			return useTableActions([
+				{
+					name: "字典项",
 					props: {
-						color: record.is_active ? "green" : "red",
+						icon: h(OrderedListOutlined),
+						size: "small",
 					},
-				})
-			},
-		},
-		{
-			title: "操作",
-			width: 220,
-			key: "operation",
-			align: "center",
-			fixed: "right",
-			customRender({ record }) {
-				return useTableActions([
-					{
-						name: "字典项",
-						props: {
-							icon: h(OrderedListOutlined),
-							size: "small",
-						},
-						action() {
-							router.visit(route("page.manager.starter.dict.item", { slug: record.slug }))
-						},
+					action() {
+						router.visit(route("page.manager.starter.dict.item", { slug: record.slug }))
 					},
-					{
-						name: "导出",
-						props: {
-							icon: h(ExportOutlined),
-							size: "small",
-						},
-						action() {
-							onExport(record)
-						},
+				},
+				{
+					name: "导出",
+					props: {
+						icon: h(ExportOutlined),
+						size: "small",
 					},
-					{
-						name: "更多",
-						props: {},
-						children: [
-							{
-								name: "编辑",
-								props: {
-									icon: h(EditOutlined),
-									size: "small",
-								},
-								action() {
-									onEdit(record)
-								},
+					action() {
+						onExport(record)
+					},
+				},
+				{
+					name: "更多",
+					props: {},
+					children: [
+						{
+							name: "编辑",
+							props: {
+								icon: h(EditOutlined),
+								size: "small",
 							},
-							{
-								name: "删除",
-								props: {
-									icon: h(DeleteOutlined),
-									size: "small",
-								},
-								action() {
-									onDelete(record)
-								},
+							action() {
+								onEdit(record)
 							},
-						],
-					},
-				])
-			},
+						},
+						{
+							name: "删除",
+							props: {
+								icon: h(DeleteOutlined),
+								size: "small",
+							},
+							action() {
+								onDelete(record)
+							},
+						},
+					],
+				},
+			])
 		},
-	]
-}
+	},
+]
 </script>

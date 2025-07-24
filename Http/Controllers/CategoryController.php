@@ -3,7 +3,7 @@
 namespace Modules\Starter\Http\Controllers;
 
 use App\Http\Controllers\BaseManagerController;
-use Modules\Starter\Emnus\State;
+use Modules\Starter\Enums\State;
 use Modules\Starter\Entities\Category;
 
 class CategoryController extends BaseManagerController

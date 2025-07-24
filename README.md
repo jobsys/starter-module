@@ -75,22 +75,21 @@ php artisan module:enable Starter && php artisan module:publish-migration Starte
 
 消息通知管理功能集成了消息通知的获取、查看、标记已读等功能。API
 由 `Modules\Starter\Http\Controllers\NotificationController` 提供，
-前端页面由 `Modules\Starter\Resources\views\web\components\NotificationBox.vue`组件提供。
+前端页面由 `Modules\Starter\Resources\views\web\components\MessageBox.vue`组件提供。
 
 #### 开发规范
 
 1. 消息通知管理的数据表为 `notifications`
    ，详细的功能可以参考 [Laravel Notifications](https://laravel.com/docs/10.x/notifications)。
-2. 在页面中使用 `NotificationBox` 组件，如：
+2. 在页面中使用 `MessageBox` 组件，如：
     ```js
-    import NotificationBox from "@modules/Starter/Resources/views/web/components/NotificationBox.vue"
+    import MessageBox from "@modules/Starter/Resources/views/web/components/MessageBox.vue"
     ```
     ```vue
-    <NotificationBox></NotificationBox>
+    <MessageBox></MessageBox>
     ```
 
 ## 模块代码
-
 
 ### 数据表
 
@@ -136,7 +135,6 @@ enum State: string
 ```
 
 ### 辅助函数
-
 
 #### 基础
 
@@ -241,5 +239,5 @@ web/PageDict.vue                # 字典页面
 #### PC 组件
 
 ```bash
-web/components/NotificationBox.vue      # 消息通知组件
+web/components/MessageBox.vue      # 消息通知组件
 ```

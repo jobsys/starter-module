@@ -12,19 +12,20 @@
 */
 
 use Illuminate\Support\Facades\Route;
-use Modules\Starter\Http\Controllers\UserCgiController;
 
 
 Route::prefix("manager/starter")->name("page.manager.starter.")->group(function () {
-	Route::get('/dict', 'DictController@pageDict')->name('dict');
-	Route::get('/dict/item', 'DictController@pageDictItem')->name('dict.item');
-	Route::get('/log', 'LogController@pageLog')->name('log');
+	Route::get('/dict', [\Modules\Starter\Http\Controllers\DictController::class, 'pageDict'])->name('dict');
+	Route::get('/dict/item', [\Modules\Starter\Http\Controllers\DictController::class, 'pageDictItem'])->name('dict.item');
+	Route::get('/log', [\Modules\Starter\Http\Controllers\LogController::class, 'pageLog'])->name('log');
+	Route::get('/message', [\Modules\Starter\Http\Controllers\MessageController::class, 'pageMessage'])->name('message');
+	Route::get('/message/{id}', [\Modules\Starter\Http\Controllers\MessageController::class, 'pageMessageDetail'])->name('message.detail');
 });
 
 Route::prefix("manager/export")->name("export.manager.starter.")->group(function () {
-	Route::get('/dict', 'DictController@export')->name('dict');
+	Route::get('/dict', [\Modules\Starter\Http\Controllers\DictController::class, 'export'])->name('dict');
 });
 
 
-Route::get('/login', [UserCgiController::class, 'pageLogin'])->name('page.login');
-Route::get('/logout', [UserCgiController::class, 'logout'])->name('page.logout');
+Route::get('/login', [Modules\Starter\Http\Controllers\UserCgiController::class, 'pageLogin'])->name('page.login');
+Route::get('/logout', [Modules\Starter\Http\Controllers\UserCgiController::class, 'logout'])->name('page.logout');

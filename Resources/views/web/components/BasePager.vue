@@ -48,19 +48,8 @@
 					:style="{ width: genPixel(props.statisticsWidth), columnGap: genPixel(props.statisticsGap) }"
 				>
 					<template v-for="(item, index) in props.statistics" :key="index">
-						<VueUiSparkgauge
-							v-if="item.component === 'VueUiSparkgauge'"
-							:style="{ width: '80px', flexShrink: 0 }"
-							:dataset="getChartDataset(item)"
-							:config="getChartConfig(item)"
-						>
-						</VueUiSparkgauge>
-						<VueUiKpi
-							v-else-if="item.component === 'VueUiKpi'"
-							:dataset="getChartDataset(item)"
-							:config="getChartConfig(item)"
-						></VueUiKpi>
-						<div v-else-if="item.component === 'divider'" class="w-[1px] h-[80px] bg-gray-200"></div>
+						<div v-if="item.component === 'divider'" class="w-[1px] h-[80px] bg-gray-200"></div>
+						<component v-else :is="generateChart(item)"></component>
 					</template>
 				</div>
 			</template>
@@ -78,6 +67,7 @@ import { isFunction, isNull, isUndefined, merge } from "lodash-es"
 import { ArrowLeftOutlined } from "@ant-design/icons-vue"
 import { useGoBack } from "@/js/hooks/land"
 import { VueUiKpi, VueUiSparkgauge } from "vue-data-ui"
+import { Tooltip } from "ant-design-vue"
 
 const props = defineProps({
 	error: { type: String, default: "" },
@@ -125,6 +115,31 @@ const genPixel = (num) => {
 	}
 
 	return num
+}
+
+const generateChart = (item) => {
+	let chart = null
+	if (item.component === "VueUiSparkgauge") {
+		chart = h(VueUiSparkgauge, {
+			style: { width: "80px", flexShrink: 0 },
+			dataset: getChartDataset(item),
+			config: getChartConfig(item),
+		})
+	}
+	if (item.component === "VueUiKpi") {
+		chart = h(VueUiKpi, {
+			dataset: getChartDataset(item),
+			config: getChartConfig(item),
+		})
+	}
+
+	if (item.tooltip) {
+		if (isFunction(item.tooltip)) {
+			return item.tooltip({ chart })
+		}
+		return h(Tooltip, { title: item.tooltip }, () => chart)
+	}
+	return chart
 }
 
 const getChartDataset = (item) => {

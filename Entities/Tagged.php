@@ -21,6 +21,9 @@ use Modules\Starter\Services\TagService;
  */
 class Tagged extends BaseModel
 {
+
+	protected $model_name = '标签关联';
+
 	protected $table = 'tagging_tagged';
 
 	public $timestamps = false;

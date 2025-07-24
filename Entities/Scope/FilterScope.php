@@ -110,12 +110,20 @@ class FilterScope implements Scope
 						$query['value'] = $entity->descendantsAndSelf($value)->pluck('id')->toArray();
 					}
 
+
 					if (isset($props[$prop])) { //判断自定规则
 						$builder = $props[$prop]($builder, $query);
 					} else if (Str::contains($prop, '.')) { //判断关联规则，使用关联规则前需自行使用 with 加载关联
 						$relations = collect(explode('.', $prop));
 						$relation_prop = $relations->pop(); // 最后一项是属性，前面都是关联
-						$builder = $builder->whereHas($relations->join('.'), fn($sub_query) => land_filterable($relation_prop, $sub_query, $query));
+						$relation = $relations->join('.');
+
+						//如果是多态关联，则使用 whereHasMorph 方法
+						if (isset($config['morph'][$relation])) {
+							$builder = $builder->whereHasMorph($relation, $config['morph'][$relation], fn($sub_query) => land_filterable($relation_prop, $sub_query, $query));
+						} else {
+							$builder = $builder->whereHas($relation, fn($sub_query) => land_filterable($relation_prop, $sub_query, $query));
+						}
 					} else { //普通规则
 						$builder = land_filterable($prop, $builder, $query);
 					}

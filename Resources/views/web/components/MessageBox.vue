@@ -1,5 +1,5 @@
 <template>
-	<div class="notification-box bg-white rounded">
+	<div class="message-box bg-white rounded">
 		<a-tabs v-model:activeKey="currentTab" class="px-4">
 			<a-tab-pane v-for="tab in tabs" :key="tab.key">
 				<template #tab>
@@ -11,21 +11,21 @@
 					:ref="(el) => setListRef(el, tab.key)"
 					:height="height"
 					finished-text=""
-					:use-store="notificationMap[tab.key]"
+					:use-store="messageMap[tab.key]"
 					:list-props="{ itemLayout: 'horizontal' }"
 					:extra-data="{ type: currentTab }"
-					:url="route('api.manager.starter.notification.items')"
+					:url="route('api.manager.message.items')"
 				>
 					<template #renderItem="{ item }">
 						<a-list-item key="item.id">
-							<a-list-item-meta :description="item.data?.message">
+							<a-list-item-meta :description="item.content">
 								<template #title>
 									<a-badge v-if="!item.read_at" color="red"></a-badge>
-									{{ item.data?.title }}
-									<span class="text-gray-500 ml-4 text-[12px]">{{ item.created_at_datetime }}</span>
+									{{ item.title }}
+									<span class="text-gray-500 ml-4 text-[12px]">{{ item.created_at }}</span>
 								</template>
 							</a-list-item-meta>
-							<template #actions v-if="item.data.url">
+							<template #actions v-if="item.data?.url">
 								<a-button type="ghost" size="small" @click="onView(item)">
 									<template #icon>
 										<EnterOutlined></EnterOutlined>
@@ -67,23 +67,17 @@ import { useFetch, useProcessStatusSuccess } from "jobsys-newbie/hooks"
 import { message } from "ant-design-vue"
 
 const props = defineProps({
-	height: {
-		type: Number,
-		default: 300,
-	},
-	useStore: {
-		type: Object,
-		default: null,
-	},
+	height: { type: Number, default: 300 },
+	useStore: { type: Object, default: null },
 })
 
-const notificationMap = computed(() => props.useStore.notificationMap)
+const messageMap = computed(() => props.useStore.messageMap)
 
 const route = inject("route")
 const currentTab = ref("todo")
 const listRefs = []
 
-const tabs = computed(() => props.useStore.notificationTabs)
+const tabs = computed(() => props.useStore.messageTabs)
 
 const setListRef = (el, key) => {
 	listRefs.push({
@@ -93,7 +87,7 @@ const setListRef = (el, key) => {
 }
 
 const onView = (item) => {
-	useFetch().post(route("api.manager.starter.notification.read", { id: item.id }))
+	useFetch().post(route("api.manager.message.read", { id: item.id }))
 	if (item.data?.url) {
 		window.location = item.data.url
 	}
@@ -101,7 +95,7 @@ const onView = (item) => {
 
 const onDelete = async (item) => {
 	props.useStore.deleteItem(item, currentTab.value)
-	const res = await useFetch().post(route("api.manager.starter.notification.delete", { id: item.id }))
+	const res = await useFetch().post(route("api.manager.message.delete", { id: item.id }))
 	useProcessStatusSuccess(res, () => {
 		props.useStore.deleteItem(item, currentTab.value)
 		message.success("删除成功")
@@ -109,7 +103,7 @@ const onDelete = async (item) => {
 }
 
 const markAsRead = async (item) => {
-	const res = await useFetch().post(route("api.manager.starter.notification.read", { id: item.id }))
+	const res = await useFetch().post(route("api.manager.message.read", { id: item.id }))
 	useProcessStatusSuccess(res, () => {
 		props.useStore.read(item, currentTab.value)
 		message.success("标记成功")
@@ -117,7 +111,7 @@ const markAsRead = async (item) => {
 }
 
 const markAllAsRead = async () => {
-	const res = await useFetch().post(route("api.manager.starter.notification.read-all", { type: currentTab.value }))
+	const res = await useFetch().post(route("api.manager.message.read-all", { type: currentTab.value }))
 
 	useProcessStatusSuccess(res, () => {
 		props.useStore.readAll(currentTab.value)
@@ -126,7 +120,7 @@ const markAllAsRead = async () => {
 }
 
 const onDeleteAll = async () => {
-	const res = await useFetch().post(route("api.manager.starter.notification.delete-all", { type: currentTab.value }))
+	const res = await useFetch().post(route("api.manager.message.delete-all", { type: currentTab.value }))
 
 	useProcessStatusSuccess(res, () => {
 		props.useStore.deleteAll(currentTab.value)
