@@ -21,7 +21,10 @@ class UserCgiController extends BaseController
 		}
 
 		Inertia::setRootView('manager');
-		return Inertia::render('NudePageLogin@Starter', ['sm2PublicKey' => config('conf.sm2_public_key')]);
+		return Inertia::render('NudePageLogin@Starter', [
+			'sm2PublicKey' => config('conf.sm2_public_key'),
+			'appName' => config('app.name'),
+		]);
 	}
 
 	public function login(Request $request)

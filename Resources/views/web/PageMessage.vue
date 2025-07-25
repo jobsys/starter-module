@@ -23,31 +23,6 @@
 		@success="() => tableRef?.doFetch()"
 	>
 		<template #receivers="{ submitForm }">
-			<div class="mb-6!" v-if="submitForm.receiver_type === 'student'">
-				<a-card title="检索设定接收对象" size="small" class="hover-card mb-4!">
-					<NewbieSearch
-						ref="studentSearchRef"
-						class="bg-white p-4"
-						:filterable-columns="studentFilterableColumns"
-						@search="onSearchStudent"
-					></NewbieSearch>
-				</a-card>
-				<div class="ml-[260px]">
-					<span>
-						当前条件共有 <span class="text-red-500 font-bold text-lg"> {{ state.totalReceiversCount }} </span> 名学生
-					</span>
-					<NewbieButton
-						v-if="state.totalReceiversCount > 0"
-						type="link"
-						:icon="h(ArrowRightOutlined)"
-						icon-position="right"
-						@click="() => (state.showStudentTableModal = true)"
-						>查看列表
-					</NewbieButton>
-					<span v-else class="font-italic text-gray-500">请点击搜索进行学生检索</span>
-				</div>
-			</div>
-
 			<div class="mb-6!" v-if="submitForm.receiver_type === 'user'">
 				<a-card title="检索设定接收对象" size="small" class="hover-card mb-4!">
 					<NewbieSearch
@@ -59,7 +34,7 @@
 				</a-card>
 				<div class="ml-[260px]">
 					<span>
-						当前条件共有 <span class="text-red-500 font-bold text-lg"> {{ state.totalReceiversCount }} </span> 名教职工
+						当前条件共有 <span class="text-red-500 font-bold text-lg"> {{ state.totalReceiversCount }} </span> 名员工
 					</span>
 					<NewbieButton
 						v-if="state.totalReceiversCount > 0"
@@ -69,28 +44,13 @@
 						@click="() => (state.showUserTableModal = true)"
 						>查看列表
 					</NewbieButton>
-					<span v-else class="font-italic text-gray-500">请点击搜索进行教职工检索</span>
+					<span v-else class="font-italic text-gray-500">请点击搜索进行员工检索</span>
 				</div>
 			</div>
 		</template>
 	</MessageSender>
 
-	<NewbieModal v-model:visible="state.showStudentTableModal" type="drawer" title="学生列表" width="1300">
-		<NewbieTable
-			ref="studentTableRef"
-			:filterable="false"
-			method="post"
-			:url="route('api.manager.student.items')"
-			:columns="studentTableColumns()"
-			:extra-data="{ ...state.queryForm }"
-			class="hover-card"
-			:show-refresh="false"
-			:table-props="{ size: 'small' }"
-		>
-		</NewbieTable>
-	</NewbieModal>
-
-	<NewbieModal v-model:visible="state.showUserTableModal" type="drawer" title="教职工列表" width="1300">
+	<NewbieModal v-model:visible="state.showUserTableModal" type="drawer" title="员工列表" width="1300">
 		<NewbieTable
 			ref="userTableRef"
 			:filterable="false"
@@ -105,14 +65,13 @@
 	</NewbieModal>
 </template>
 <script setup>
-import { computed, h, inject, reactive, ref } from "vue"
+import { h, inject, reactive, ref } from "vue"
 import { ArrowRightOutlined, DeleteOutlined, EyeOutlined, PlusOutlined, StopOutlined } from "@ant-design/icons-vue"
 import { useTableActions } from "jobsys-newbie"
 import { useFetch, useModalConfirm, useProcessStatusSuccess } from "jobsys-newbie/hooks"
 import { message, Tag } from "ant-design-vue"
 import { useTableColumn } from "@/js/hooks/land"
 import MessageSender from "@modules/Starter/Resources/views/web/components/MessageSender.vue"
-import { useSystemOptions } from "@manager/compositions/service"
 import { router } from "@inertiajs/vue3"
 
 const props = defineProps({
@@ -125,15 +84,8 @@ const auth = inject("auth")
 
 const tableRef = ref()
 const messageSenderRef = ref()
-const studentTableRef = ref()
 const userTableRef = ref()
-const studentSearchRef = ref()
 const userSearchRef = ref()
-
-const campusOptions = computed(() => useSystemOptions("campusOptions"))
-const collegeOptions = computed(() => useSystemOptions("collegeOptions"))
-const majorOptions = computed(() => useSystemOptions("majorOptions"))
-const majorLevelOptions = computed(() => useSystemOptions("majorLevelOptions"))
 
 const state = reactive({
 	totalReceiversCount: 0,
@@ -157,14 +109,6 @@ const onEdit = () => {
 	messageSenderRef.value?.open()
 }
 
-const onSearchStudent = async (queryForm) => {
-	state.queryForm = queryForm
-	const res = await useFetch().post(route("api.manager.student.items"), { ...queryForm, page: 1, pageSize: 1 })
-	useProcessStatusSuccess(res, () => {
-		state.totalReceiversCount = res.result.total
-	})
-}
-
 const onSearchUser = async (queryForm) => {
 	state.queryForm = queryForm
 	const res = await useFetch().post(route("api.manager.user.items"), { ...queryForm, page: 1, pageSize: 1000 })
@@ -180,9 +124,7 @@ const onBeforeSubmit = ({ formatForm }) => {
 		return false
 	}
 	formatForm.total = state.totalReceiversCount
-	if (formatForm.receiver_type === "student") {
-		formatForm.receivers = studentSearchRef.value?.getQueryForm()
-	} else if (formatForm.receiver_type === "user") {
+	if (formatForm.receiver_type === "user") {
 		formatForm.receivers = state.userReceivers
 	}
 	return formatForm
@@ -250,127 +192,6 @@ const userFilterableColumns = [
 		inputProps: {
 			fieldNames: { label: "name", value: "id", children: "children" },
 		},
-	},
-]
-
-const studentFilterableColumns = [
-	{
-		title: "学号",
-		key: "student_number",
-		type: "textarea",
-		conditions: ["equal"],
-	},
-	{
-		title: "在校状态",
-		key: "in_school",
-		type: "select",
-		options: [
-			{ label: "在校", value: "yes" },
-			{ label: "离校", value: "no" },
-		],
-		conditions: ["equal"],
-	},
-	{
-		title: "校区",
-		key: "campus_id",
-		type: "select",
-		options: campusOptions.value,
-		conditions: ["equal", "include"],
-	},
-	{
-		title: "院系",
-		key: "college_id",
-		type: "select",
-		options: collegeOptions.value,
-		conditions: ["equal", "include"],
-	},
-	{
-		title: "专业",
-		key: "major_id",
-		type: "select",
-		options: majorOptions.value,
-		conditions: ["equal", "include"],
-	},
-	{
-		title: "班级",
-		key: "stu_class_name",
-		defaultCondition: "include",
-		conditions: ["include"],
-	},
-	{
-		title: "学历",
-		key: "major_level",
-		type: "select",
-		options: majorLevelOptions.value,
-		conditions: ["equal", "include"],
-	},
-]
-
-const studentTableColumns = () => [
-	{
-		title: "学号",
-		dataIndex: "student_number",
-		width: 120,
-	},
-	{
-		title: "姓名",
-		dataIndex: "name",
-		width: 100,
-	},
-	{
-		title: "性别",
-		dataIndex: "gender",
-		width: 80,
-		align: "center",
-	},
-	{
-		title: "学院",
-		dataIndex: "college_name",
-		width: 120,
-		ellipsis: true,
-	},
-	{
-		title: "专业",
-		dataIndex: "major_name",
-		width: 100,
-		ellipsis: true,
-	},
-	{
-		title: "班级",
-		dataIndex: "stu_class_name",
-		width: 140,
-		ellipsis: true,
-		filterable: true,
-	},
-	{
-		title: "学历",
-		dataIndex: ["major", "level"],
-		width: 100,
-		align: "center",
-	},
-	{
-		title: "学制",
-		dataIndex: ["major", "duration"],
-		width: 80,
-		align: "center",
-	},
-	{
-		title: "入学年份",
-		dataIndex: "enrollment_year",
-		width: 100,
-		align: "center",
-	},
-	{
-		title: "毕业年份",
-		dataIndex: "graduation_year",
-		width: 100,
-		align: "center",
-	},
-	{
-		title: "学籍状态",
-		dataIndex: "academic_status",
-		width: 100,
-		align: "center",
 	},
 ]
 

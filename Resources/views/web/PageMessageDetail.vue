@@ -37,7 +37,6 @@ import BasePager from "@modules/Starter/Resources/views/web/components/BasePager
 import { find } from "lodash-es"
 import { Tag } from "ant-design-vue"
 import { useTableColumn } from "@/js/hooks/land"
-import { useDefaultStudentQuery } from "@manager/compositions/service"
 
 const props = defineProps({
 	error: { type: String, default: "" },
@@ -173,18 +172,7 @@ const tableColumns = () => {
 		),
 	]
 
-	if (props.item.receiver_type.indexOf("student") > -1) {
-		columns = columns.concat([
-			...useDefaultStudentQuery("receiver"),
-			useTableColumn("学号", ["receiver", "student_number"], 120),
-			useTableColumn("姓名", ["receiver", "name"], 100),
-			useTableColumn("校区", ["receiver", "campus_name"], 140),
-			useTableColumn("学院", ["receiver", "college_name"], 160),
-			useTableColumn("专业", ["receiver", "major_name"], 160),
-			useTableColumn("班级", ["receiver", "stu_class_name"], 160),
-			useTableColumn("学历", ["receiver", "major_level"], 100),
-		])
-	} else if (props.item.receiver_type.indexOf("user") > -1) {
+	if (props.item.receiver_type.indexOf("user") > -1) {
 		columns = columns.concat([useTableColumn("姓名", ["receiver", "name"], 100), useTableColumn("工号", ["receiver", "work_num"], 100)])
 	}
 
