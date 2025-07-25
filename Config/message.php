@@ -4,7 +4,7 @@ use App\Models\User;
 
 return [
 	'landing_page' => [
-		User::class => ‘‘, // 'page.mobile.manager.message.detail',
+		User::class => '', // 'page.mobile.manager.message.detail',
 	],
 	'receiver_type' => [
 		['label' => '用户', 'value' => 'user'],
