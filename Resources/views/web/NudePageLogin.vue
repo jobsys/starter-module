@@ -87,7 +87,7 @@ import { useLandCustomerAsset } from "@/js/hooks/land"
 const route = inject("route")
 const http = inject("http")
 const form = ref(null)
-const logoUrl = useLandCustomerAsset("/images/default/logo-large.png")
+const logoUrl = useLandCustomerAsset("/images/default/logo.png")
 const backgroundUrl = useLandCustomerAsset("/images/default/login-bg.png")
 
 const props = defineProps({
